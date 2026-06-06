@@ -5,6 +5,24 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>3D Pinball for Windows - Space Cadet</title>
+    <!-- Firebase App and Analytics -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnoNZls8UrsNIa8zR3-xhC81tbqq_RZ1A",
+            authDomain: "space-cadet-pinball.firebaseapp.com",
+            projectId: "space-cadet-pinball",
+            storageBucket: "space-cadet-pinball.firebasestorage.app",
+            messagingSenderId: "140350495966",
+            appId: "1:140350495966:web:f6d0654070b25685deb64f",
+            measurementId: "G-7BWMFB1JSY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
     <style>
         /* Based on https://tpenguinltg.github.io/winclassic/ */
         :root {
