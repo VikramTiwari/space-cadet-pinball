@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generate-icons.mjs",
     "dev": "npx -y serve . -l 3000",
     "serve": "npx -y serve . -l 3000",
     "icons:generate": "node scripts/generate-icons.mjs",

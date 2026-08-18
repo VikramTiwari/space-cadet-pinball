@@ -8,3 +8,7 @@ firebase-debug.log
 # Deploy and icon cache
 .deploy-cache.json
 .icon-cache.json
+
+# Generated raster icons (source of truth is favicon.svg)
+*.png
+
