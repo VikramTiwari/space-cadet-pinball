@@ -139,61 +139,14 @@ function buildAndDeploy(targets, changes, newCache) {
   }
 }
 
-async function pruneHostingDeployments(token) {
-  console.log(`🧹 Cleaning up Firebase Hosting releases (retaining last ${keepCount})...`);
-  try {
-    const listUrl = `https://firebasehosting.googleapis.com/v1beta1/sites/${projectId}/versions?pageSize=100`;
-    const res = await fetch(listUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'x-goog-user-project': projectId,
-      },
-    });
-    if (!res.ok) return;
-
-    const data = await res.json();
-    const activeVersions = (data.versions || []).filter((v) => v.status !== 'DELETED');
-    if (activeVersions.length <= keepCount) {
-      console.log(`✅ Active Hosting releases (${activeVersions.length}) within retention limit (${keepCount}).\n`);
-      return;
-    }
-
-    activeVersions.sort((a, b) => new Date(b.createTime || 0).getTime() - new Date(a.createTime || 0).getTime());
-    const toDelete = activeVersions.slice(keepCount);
-    console.log(`🗑️ Pruning ${toDelete.length} older Hosting releases...`);
-    let deleted = 0;
-    for (const v of toDelete) {
-      const delRes = await fetch(`https://firebasehosting.googleapis.com/v1beta1/${v.name}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'x-goog-user-project': projectId,
-        },
-      });
-      if (delRes.ok) deleted++;
-    }
-    console.log(`✅ Pruned ${deleted} old Hosting releases.\n`);
-  } catch (err) {
-    console.warn('⚠️ Hosting pruning error:', err.message);
-  }
-}
-
 async function main() {
   if (cleanOnly) {
-    const token = getAccessToken();
-    if (token) await pruneHostingDeployments(token);
+    console.log('✔ Native retention is enabled. No manual cleanup needed.');
     return;
   }
 
   const { targets, changes, newCache } = await detectChanges();
-  const didDeploy = buildAndDeploy(targets, changes, newCache);
-
-  if (didDeploy) {
-    const token = getAccessToken();
-    if (token) await pruneHostingDeployments(token);
-  }
+  buildAndDeploy(targets, changes, newCache);
 }
 
 main().catch((err) => {
