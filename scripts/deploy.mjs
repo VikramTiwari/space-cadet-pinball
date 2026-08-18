@@ -71,6 +71,7 @@ async function detectChanges() {
 
   const currentHosting =
     hashFile(resolve(ROOT_DIR, 'index.html')) +
+    hashFile(resolve(ROOT_DIR, 'login.html')) +
     hashFile(resolve(ROOT_DIR, 'SpaceCadetPinball.js')) +
     hashFile(resolve(ROOT_DIR, 'SpaceCadetPinball.wasm')) +
     hashFile(resolve(ROOT_DIR, 'SpaceCadetPinball.data')) +

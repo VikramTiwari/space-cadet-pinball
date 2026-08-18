@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - 3D Pinball Space Cadet</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0a246a">
+    <style>
+        :root {
+            --ActiveBorder: rgb(212, 208, 200);
+            --ActiveTitle: rgb(10, 36, 106);
+            --Background: rgb(58, 110, 165);
+            --ButtonFace: rgb(212, 208, 200);
+            --ButtonHilight: rgb(255, 255, 255);
+            --ButtonLight: rgb(212, 208, 200);
+            --ButtonShadow: rgb(128, 128, 128);
+            --ButtonDkShadow: rgb(64, 64, 64);
+            --ButtonText: rgb(0, 0, 0);
+            --GradientActiveTitle: rgb(166, 202, 240);
+            --Hilight: rgb(10, 36, 106);
+            --HilightText: rgb(255, 255, 255);
+            --TitleText: rgb(255, 255, 255);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--Background);
+            font-family: "MS Sans Serif", Tahoma, Geneva, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .retro-window {
+            width: 380px;
+            max-width: 90vw;
+            background: var(--ButtonFace);
+            box-shadow: 2px 2px 0px #000, inset 1px 1px 0px #fff, inset -1px -1px 0px #808080;
+            padding: 3px;
+            color: black;
+        }
+
+        .titlebar {
+            background: linear-gradient(90deg, #0a246a 0%, #a6caf0 100%);
+            color: var(--TitleText);
+            font-weight: bold;
+            font-size: 13px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dialog-body {
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .retro-btn {
+            background: var(--ButtonFace);
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+            box-sizing: border-box;
+        }
+
+        .retro-btn:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .retro-btn.primary {
+            background: #0a246a;
+            color: #fff;
+            border-color: #60a5fa #000 #000 #60a5fa;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .retro-btn.primary:hover {
+            background: #1e3a8a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="retro-window">
+        <div class="titlebar">
+            <span>Portal Authentication - 3D Pinball</span>
+        </div>
+        <div class="dialog-body">
+            <div style="font-size: 36px; margin-bottom: 8px;">🚀</div>
+            <div style="font-size: 15px; font-weight: bold; color: #0a246a; margin-bottom: 6px;">
+                Sign in to Play
+            </div>
+            <div style="font-size: 12px; color: #475569; margin-bottom: 20px; line-height: 1.4;">
+                Sign in with your Portal account to play 3D Space Cadet Pinball and save your high scores.
+            </div>
+
+            <a id="btn-login" class="retro-btn primary" href="#">
+                🔑 Login with Portal →
+            </a>
+
+            <div style="margin-top: 18px; font-size: 11px; color: #64748b;">
+                🔒 Secured by Portal Authentication
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SSO_STORAGE_KEY = 'pinball_portal_user';
+        const PORTAL_URL = 'https://portal.vikramtiwari.com';
+
+        function parseSSOTicket(ticket) {
+            try {
+                const parts = ticket.split('.');
+                if (parts.length < 2) return null;
+                const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                const json = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                );
+                const payload = JSON.parse(json);
+                return {
+                    userId: payload.userId || payload.sub || 'cadet',
+                    name: payload.name || payload.displayName || 'Space Cadet',
+                    email: payload.email || '',
+                    role: payload.role || 'member',
+                    expiresAt: payload.expiresAt || payload.exp || 0
+                };
+            } catch (err) {
+                return null;
+            }
+        }
+
+        // Check if ticket present in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ssoTicket = urlParams.get('ssoTicket') || urlParams.get('token');
+        if (ssoTicket) {
+            const parsedUser = parseSSOTicket(ssoTicket);
+            if (parsedUser) {
+                localStorage.setItem(SSO_STORAGE_KEY, JSON.stringify(parsedUser));
+                window.location.replace('/');
+            }
+        } else {
+            // Check existing session
+            try {
+                const raw = localStorage.getItem(SSO_STORAGE_KEY);
+                if (raw) {
+                    const u = JSON.parse(raw);
+                    if (u && (!u.expiresAt || u.expiresAt * 1000 > Date.now())) {
+                        window.location.replace('/');
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Set login link
+        const targetRedirect = window.location.origin + '/';
+        document.getElementById('btn-login').href = `${PORTAL_URL}/?app=pinball&redirect_uri=${encodeURIComponent(targetRedirect)}`;
+    </script>
+</body>
+
+</html>

@@ -11,6 +11,50 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0a246a">
+    <script>
+        (function() {
+            const SSO_STORAGE_KEY = 'pinball_portal_user';
+            const urlParams = new URLSearchParams(window.location.search);
+            const ssoTicket = urlParams.get('ssoTicket') || urlParams.get('token');
+            if (ssoTicket) {
+                try {
+                    const parts = ssoTicket.split('.');
+                    if (parts.length >= 2) {
+                        const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                        const json = decodeURIComponent(
+                            atob(base64)
+                                .split('')
+                                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                                .join('')
+                        );
+                        const payload = JSON.parse(json);
+                        const user = {
+                            userId: payload.userId || payload.sub || 'cadet',
+                            name: payload.name || payload.displayName || 'Space Cadet',
+                            email: payload.email || '',
+                            role: payload.role || 'member',
+                            expiresAt: payload.expiresAt || payload.exp || 0
+                        };
+                        localStorage.setItem(SSO_STORAGE_KEY, JSON.stringify(user));
+                    }
+                } catch (e) {}
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+
+            try {
+                const raw = localStorage.getItem(SSO_STORAGE_KEY);
+                if (raw) {
+                    const u = JSON.parse(raw);
+                    if (u && (!u.expiresAt || u.expiresAt * 1000 > Date.now())) {
+                        return; // Authenticated
+                    }
+                }
+            } catch (e) {}
+
+            // Unauthenticated -> Redirect immediately to login page
+            window.location.replace('login.html');
+        })();
+    </script>
     <style>
         /* Based on https://tpenguinltg.github.io/winclassic/ */
         :root {
@@ -521,6 +565,7 @@
             <div class="menu-item highlight-btn" id="btn-hall-of-fame" title="View Global & Family Leaderboard">🏆 <u>H</u>all of Fame</div>
             <div class="menu-item" id="btn-submit-score-manual" title="Record High Score to Leaderboard">⭐ Post Score</div>
             <div style="flex: 1;"></div>
+            <div class="menu-item" id="btn-sign-out" title="Sign out of Portal account">🚪 Logout</div>
             <div class="menu-item" id="btn-toggle-fullscreen">⛶ Fullscreen</div>
         </div>
 
@@ -536,29 +581,6 @@
                 <button class="hud-btn" id="btn-hud-new-game">New Game (F2)</button>
                 <button class="hud-btn" id="btn-hud-hof">🏆 Hall of Fame</button>
                 <button class="hud-btn" id="btn-hud-exit-fs">✕ Exit Fullscreen (ESC)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🔒 Portal Login Required Modal -->
-    <div id="auth-required-modal" class="modal-overlay hidden">
-        <div class="retro-dialog" style="width: 360px; text-align: center;">
-            <div class="dialog-titlebar">
-                <span>Portal Authentication</span>
-            </div>
-            <div class="dialog-body" style="padding: 18px 16px;">
-                <div style="font-size: 14px; font-weight: bold; color: #0a246a; margin-bottom: 6px;">
-                    Sign in to Play
-                </div>
-                <div style="font-size: 12px; color: #475569; margin-bottom: 16px;">
-                    Sign in with your Portal account to play and save your high scores.
-                </div>
-                <button class="retro-btn primary" id="btn-login-portal" style="padding: 8px 20px; font-size: 13px; width: 100%;">
-                    🔑 Login with Portal →
-                </button>
-                <div style="margin-top: 14px; font-size: 11px; color: #64748b;">
-                    🔒 Secured by Portal Authentication
-                </div>
             </div>
         </div>
     </div>
@@ -819,24 +841,17 @@
         }
 
         let currentUser = getStoredUser();
-
-        // Enforce Authentication Check
-        const authModal = document.getElementById('auth-required-modal');
-        const btnLoginPortal = document.getElementById('btn-login-portal');
-
-        function enforceAuth() {
-            if (!currentUser) {
-                authModal.classList.remove('hidden');
-            } else {
-                authModal.classList.add('hidden');
-                updateUserDisplay();
-            }
+        if (!currentUser) {
+            window.location.replace('login.html');
         }
 
-        btnLoginPortal.addEventListener('click', () => {
-            const target = `${PORTAL_URL}/?app=pinball&redirect_uri=${encodeURIComponent(window.location.href)}`;
-            window.location.href = target;
-        });
+        const btnSignOut = document.getElementById('btn-sign-out');
+        if (btnSignOut) {
+            btnSignOut.addEventListener('click', () => {
+                localStorage.removeItem(SSO_STORAGE_KEY);
+                window.location.replace('login.html');
+            });
+        }
 
         function updateUserDisplay() {
             if (!currentUser) return;
