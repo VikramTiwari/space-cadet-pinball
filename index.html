@@ -713,7 +713,19 @@
             })(),
             printErr: function (text) {
                 if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                console.error(text);
+                // Suppress benign Emscripten diagnostic messages and WebGL fallback notices
+                if (
+                    typeof text === 'string' && (
+                        text.includes('GL_OES_EGL_image_external') ||
+                        text.includes('emscripten_set_main_loop_timing') ||
+                        text.includes('post-exception status') ||
+                        text.includes('ScriptProcessorNode is deprecated')
+                    )
+                ) {
+                    console.debug(text);
+                    return;
+                }
+                console.warn(text);
             },
             canvas: (function () {
                 var canvas = document.getElementById('canvas');
@@ -759,11 +771,8 @@
             }
         };
         Module.setStatus('Downloading...');
-        window.onerror = function () {
-            Module.setStatus('Exception thrown, see JavaScript console');
-            Module.setStatus = function (text) {
-                if (text) Module.printErr('[post-exception status] ' + text);
-            };
+        window.onerror = function (msg, url, line) {
+            console.debug('Pinball runtime event:', msg, url, line);
         };
     </script>
     <script async type="text/javascript" src="SpaceCadetPinball.js"></script>
@@ -1130,9 +1139,9 @@
         const isFullscreenActive = () => {
             return Boolean(
                 document.fullscreenElement ||
-                (document as any).webkitFullscreenElement ||
-                (document as any).mozFullScreenElement ||
-                (document as any).msFullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement ||
                 document.body.classList.contains('css-fullscreen') ||
                 document.getElementById('game-container')?.classList.contains('is-fullscreen')
             );
@@ -1148,12 +1157,12 @@
             try {
                 if (container.requestFullscreen) {
                     await container.requestFullscreen();
-                } else if ((container as any).webkitRequestFullscreen) {
-                    (container as any).webkitRequestFullscreen();
-                } else if ((container as any).mozRequestFullScreen) {
-                    (container as any).mozRequestFullScreen();
-                } else if ((container as any).msRequestFullscreen) {
-                    (container as any).msRequestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
                 }
             } catch (e) {
                 console.warn('Native requestFullscreen notice:', e);
@@ -1171,19 +1180,19 @@
 
             try {
                 const hasFs = document.fullscreenElement ||
-                    (document as any).webkitFullscreenElement ||
-                    (document as any).mozFullScreenElement ||
-                    (document as any).msFullscreenElement;
+                    document.webkitFullscreenElement ||
+                    document.mozFullScreenElement ||
+                    document.msFullscreenElement;
 
                 if (hasFs) {
                     if (document.exitFullscreen) {
                         await document.exitFullscreen().catch(() => {});
-                    } else if ((document as any).webkitExitFullscreen) {
-                        (document as any).webkitExitFullscreen();
-                    } else if ((document as any).mozCancelFullScreen) {
-                        (document as any).mozCancelFullScreen();
-                    } else if ((document as any).msExitFullscreen) {
-                        (document as any).msExitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        document.mozCancelFullScreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
                     }
                 }
             } catch (e) {}
@@ -1211,7 +1220,7 @@
 
         // Double-click titlebar to toggle fullscreen
         document.querySelector('.titlebar')?.addEventListener('dblclick', (e) => {
-            if (e.target && (e.target as HTMLElement).closest('.button')) return;
+            if (e.target && e.target.closest && e.target.closest('.button')) return;
             toggleFullscreen();
         });
 
@@ -1229,9 +1238,9 @@
         const syncFullscreenState = () => {
             const hasNativeFs = Boolean(
                 document.fullscreenElement ||
-                (document as any).webkitFullscreenElement ||
-                (document as any).mozFullScreenElement ||
-                (document as any).msFullscreenElement
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement
             );
             if (!hasNativeFs && !document.body.classList.contains('css-fullscreen')) {
                 document.getElementById('game-container')?.classList.remove('is-fullscreen');
