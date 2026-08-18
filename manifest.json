@@ -2,8 +2,14 @@
   "name": "3D Pinball Space Cadet",
   "short_name": "Pinball",
   "description": "Classic 3D Space Cadet Pinball for Windows, compiled to WebAssembly for modern browsers.",
+  "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "handle_links": "preferred",
   "background_color": "#000000",
   "theme_color": "#0a246a",
   "icons": [
