@@ -1,3 +1,9 @@
+# Dependencies
+node_modules/
+
 # Firebase cache and logs
 .firebase/
 firebase-debug.log
+
+# Deploy cache
+.deploy-cache.json
