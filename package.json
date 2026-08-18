@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "npx -y serve . -l 3000",
+    "serve": "npx -y serve . -l 3000",
     "icons:generate": "node scripts/generate-icons.mjs",
     "deploy": "node scripts/deploy.mjs",
     "deploy:clean": "node scripts/deploy.mjs --clean-only"
