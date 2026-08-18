@@ -632,6 +632,9 @@
             getFirestore, 
             collection, 
             addDoc, 
+            deleteDoc,
+            doc,
+            getDocs,
             query, 
             orderBy, 
             limit, 
@@ -777,11 +780,11 @@
         }
 
         // ====================================================================
-        // FIRESTORE LEADERBOARD & REAL-TIME LISTENER
+        // FIRESTORE LEADERBOARD & REAL-TIME LISTENER (TOP 100)
         // ====================================================================
         const leaderboardBody = document.getElementById('leaderboard-body');
         const scoresCol = collection(db, 'pinball_scores');
-        const scoresQuery = query(scoresCol, orderBy('score', 'desc'), limit(25));
+        const scoresQuery = query(scoresCol, orderBy('score', 'desc'), limit(100));
 
         onSnapshot(scoresQuery, (snapshot) => {
             if (snapshot.empty) {
@@ -891,16 +894,40 @@
                 enforceAuth();
                 return;
             }
-            const rankTitle = getCadetRank(scoreVal);
-            await addDoc(scoresCol, {
-                playerName: callsignVal,
-                userId: currentUser.userId || 'cadet',
-                userEmail: currentUser.email || '',
-                score: scoreVal,
-                rankTitle: rankTitle,
-                timestamp: serverTimestamp()
-            });
-            showToast(`🚀 [${callsignVal}] High Score Recorded: ${scoreVal.toLocaleString()} (${rankTitle})`);
+
+            try {
+                // Check if top 100 is full and if score qualifies
+                const topSnap = await getDocs(query(scoresCol, orderBy('score', 'desc'), limit(100)));
+                if (topSnap.size >= 100) {
+                    const lowestTopScore = topSnap.docs[topSnap.docs.length - 1].data().score;
+                    if (scoreVal <= lowestTopScore) {
+                        console.log(`Score ${scoreVal} did not make the Top 100 cutoff (${lowestTopScore}).`);
+                        return;
+                    }
+                }
+
+                const rankTitle = getCadetRank(scoreVal);
+                await addDoc(scoresCol, {
+                    playerName: callsignVal,
+                    userId: currentUser.userId || 'cadet',
+                    userEmail: currentUser.email || '',
+                    score: scoreVal,
+                    rankTitle: rankTitle,
+                    timestamp: serverTimestamp()
+                });
+                showToast(`🚀 [${callsignVal}] High Score Recorded: ${scoreVal.toLocaleString()} (${rankTitle})`);
+
+                // Prune any scores past the top 100
+                const allSnap = await getDocs(query(scoresCol, orderBy('score', 'desc')));
+                if (allSnap.size > 100) {
+                    for (let i = 100; i < allSnap.docs.length; i++) {
+                        await deleteDoc(doc(db, 'pinball_scores', allSnap.docs[i].id)).catch(() => {});
+                    }
+                }
+            } catch (err) {
+                console.error('Error submitting score to Firestore:', err);
+                throw err;
+            }
         }
 
         btnSubmitAction.addEventListener('click', async () => {

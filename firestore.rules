@@ -15,8 +15,9 @@ service cloud.firestore {
                     && request.resource.data.playerName.size() >= 1
                     && request.resource.data.playerName.size() <= 10;
                     
-      // High score records are immutable
-      allow update, delete: if false;
+      // Allow pruning scores beyond the top 100
+      allow delete: if true;
+      allow update: if false;
     }
   }
 }
