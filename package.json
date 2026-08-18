@@ -1,0 +1,11 @@
+{
+  "name": "space-cadet-pinball",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "icons:generate": "node scripts/generate-icons.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:clean": "node scripts/deploy.mjs --clean-only"
+  }
+}

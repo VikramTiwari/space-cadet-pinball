@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- 3D Chrome Metallic Pinball Sphere -->
+    <radialGradient id="chromeSphere" cx="32%" cy="26%" r="70%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#f8fafc"/>
+      <stop offset="55%" stop-color="#94a3b8"/>
+      <stop offset="80%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+
+    <!-- Monumental Hero Golden Flipper Body Gradient -->
+    <linearGradient id="flipperBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="38%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <!-- Subtle Sleek Ball Speed Trail Gradient -->
+    <linearGradient id="sleekBallTrail" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#60a5fa" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <!-- Flipper Bottom-Left Upward Swing Arc Gradient -->
+    <linearGradient id="flipperSwingGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#fbbf24" stop-opacity="0.25"/>
+      <stop offset="90%" stop-color="#fef08a" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <!-- Flipper Motion Ghost Wake Gradient -->
+    <radialGradient id="flipperGhostWake" cx="78px" cy="235px" r="460px" fx="78px" fy="235px" gradientUnits="userSpaceOnUse">
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.04"/>
+      <stop offset="85%" stop-color="#fbbf24" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#fef08a" stop-opacity="0.35"/>
+    </radialGradient>
+
+    <!-- Shadows -->
+    <filter id="ballShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="-4" dy="12" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+
+    <filter id="flipperShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="10" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Flipper Swing Dynamics (Upward Motion Arc from Bottom-Left) -->
+  <g opacity="0.85">
+    <!-- Motion Wake Ghost Wedge -->
+    <path d="M 78 235 L 420 500 A 455 455 0 0 0 492 420 Z" fill="url(#flipperGhostWake)" opacity="0.5"/>
+
+    <!-- Outer Paddle Tip Swing Arc -->
+    <path d="M 415 496 A 455 455 0 0 0 492 420" fill="none" stroke="url(#flipperSwingGrad)" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Mid-Paddle Motion Swing Arc -->
+    <path d="M 290 410 A 280 280 0 0 0 355 320" fill="none" stroke="url(#flipperSwingGrad)" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <!-- 2. Sleek Ball Motion Velocity Whisps (Top-Right -> Downward into Right Half) -->
+  <g opacity="0.75">
+    <path d="M 465 35 Q 415 75 385 108" fill="none" stroke="url(#sleekBallTrail)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 485 58 Q 440 98 410 125" fill="none" stroke="url(#sleekBallTrail)" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+  </g>
+
+  <!-- 3. Ultra-Long Hero Flipper (Length: 455px, Base Height: 144px, Pivot at (78, 235), Angled +24°) -->
+  <g transform="translate(78, 235) rotate(24)" filter="url(#flipperShadow)">
+    <!-- Ultra-Long Golden Flipper Paddle Base -->
+    <path d="M 0 -72 L 455 -24 A 28 28 0 0 1 455 24 L 0 72 A 72 72 0 0 1 0 -72 Z" fill="url(#flipperBody)"/>
+
+    <!-- Massive Ruby Red Strike Rubber Padding -->
+    <path d="M 0 -54 L 445 -16 A 18 18 0 0 1 445 16 L 0 54 A 54 54 0 0 1 0 -54 Z" fill="#ef4444"/>
+
+    <!-- Luminous Top-Gloss Reflection Strip -->
+    <path d="M 38 -22 L 380 -5 A 9 9 0 0 1 380 5 L 38 22 Z" fill="#fef08a" opacity="0.95"/>
+
+    <!-- Heavy Polished Chrome Pivot Axle Rivet -->
+    <circle cx="0" cy="0" r="34" fill="#cbd5e1" stroke="#1e293b" stroke-width="6.5"/>
+    <circle cx="-8" cy="-8" r="8.5" fill="#ffffff"/>
+  </g>
+
+  <!-- 4. 3D Chrome Pinball Ball (r = 58, Positioned at cx = 360, cy = 125) -->
+  <g filter="url(#ballShadow)">
+    <!-- Subtle Contrast Contour -->
+    <circle cx="360" cy="125" r="60" fill="none" stroke="#0f172a" stroke-width="2.5" opacity="0.3"/>
+
+    <!-- Chrome Metallic Sphere -->
+    <circle cx="360" cy="125" r="58" fill="url(#chromeSphere)"/>
+
+    <!-- Specular Highlight Glint -->
+    <ellipse cx="340" cy="105" rx="22" ry="12" fill="#ffffff" opacity="0.9" transform="rotate(-30, 340, 105)"/>
+    <circle cx="332" cy="97" r="6" fill="#ffffff"/>
+
+    <!-- Specular 4-Point Starlight Sparkle -->
+    <path d="M 340 105 Q 340 87 340 87 Q 340 105 358 105 Q 340 105 340 123 Q 340 105 322 105 Q 340 105 340 87" fill="#ffffff"/>
+  </g>
+
+</svg>
