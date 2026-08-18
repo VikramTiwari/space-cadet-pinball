@@ -2983,6 +2983,9 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
             done(null);
           }
         }
+        if (typeof window !== 'undefined' && window.onPinballSyncFS) {
+          try { window.onPinballSyncFS(); } catch (e) {}
+        }
       },
   mount(type, opts, mountpoint) {
         if (typeof type == 'string') {
@@ -3529,6 +3532,11 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         try {
           if (stream.stream_ops.close) {
             stream.stream_ops.close(stream);
+          }
+          if (typeof window !== 'undefined' && window.onPinballStreamClose && stream && stream.node) {
+            try {
+              window.onPinballStreamClose(stream.node.name, stream.node.contents);
+            } catch (err) {}
           }
         } catch (e) {
           throw e;

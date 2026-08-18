@@ -1273,41 +1273,161 @@
         document.addEventListener('MSFullscreenChange', syncFullscreenState);
 
         // ====================================================================
-        // AUTOMATIC HIGH SCORE EXTRACTION & AUTO-SUBMISSION
+        // AUTOMATIC HIGH SCORE EXTRACTION & REAL-TIME AUTO-SUBMISSION
         // ====================================================================
-        let lastProcessedScore = 0;
-        window.onPinballFileWrite = (path, data) => {
-            try {
-                if (!path.endsWith('.ini') && !path.includes('pb') && !path.includes('imgui')) return;
-                const text = new TextDecoder().decode(data);
-                
-                // Parse scores from INI text
-                const scoreMatches = [...text.matchAll(/(?:High Score \d+|Score|\.Score)\s*=?\s*(\d+)/gi)];
-                let maxScore = 0;
-                for (const match of scoreMatches) {
-                    const val = parseInt(match[1], 10);
-                    if (!isNaN(val) && val > maxScore && val < 2000000000) {
-                        maxScore = val;
+        const SUBMITTED_SCORE_KEY = 'pinball_user_highest_score';
+        let highestRecordedScore = parseInt(localStorage.getItem(SUBMITTED_SCORE_KEY) || '0', 10);
+        let isSubmittingScore = false;
+
+        function extractScoresFromRawText(text) {
+            if (!text || typeof text !== 'string') return [];
+            const found = [];
+            // Regex match common INI / decompiled formats:
+            // "High Score 1 = 500000", "1.Score = 500000", "Score: 500000", "Score.0=500000", etc.
+            const regexes = [
+                /(?:High\s*Score\s*\d*|Score\s*\d*|\.Score|score|Score\.\d+)\s*[:=]\s*(\d+)/gi,
+                /(?:High\s*Score\s*\d*|Score\s*\d*|\.Score)\s+(\d+)/gi,
+                /^\s*(\d{4,9})\s*$/gm
+            ];
+
+            for (const re of regexes) {
+                const matches = [...text.matchAll(re)];
+                for (const m of matches) {
+                    const num = parseInt(m[1], 10);
+                    // Filter valid pinball scores (positive non-zero, below 2 billion)
+                    if (!isNaN(num) && num > 1000 && num < 2000000000) {
+                        found.push(num);
                     }
                 }
+            }
+            return found;
+        }
 
-                if (maxScore > 0 && maxScore > lastProcessedScore) {
-                    lastProcessedScore = maxScore;
-                    window.latestPinballScore = maxScore;
-                    console.log('🎯 Detected Pinball High Score:', maxScore);
+        async function processNewPinballScore(scoreVal, source = 'Game Engine') {
+            if (!scoreVal || typeof scoreVal !== 'number' || scoreVal <= 0 || scoreVal >= 2000000000) return;
+            window.latestPinballScore = Math.max(window.latestPinballScore || 0, scoreVal);
 
-                    // Auto-record with authenticated user's 3-letter callsign
+            // If score is higher than our previously recorded high score
+            if (scoreVal > highestRecordedScore && !isSubmittingScore) {
+                isSubmittingScore = true;
+                highestRecordedScore = scoreVal;
+                localStorage.setItem(SUBMITTED_SCORE_KEY, scoreVal.toString());
+
+                console.log(`🎯 [Auto-Record] New High Score detected (${source}):`, scoreVal);
+
+                try {
+                    currentUser = currentUser || getStoredUser();
                     if (currentUser) {
                         const callsign = getCallsign(currentUser);
-                        submitScoreDirect(maxScore, callsign).catch(err => {
-                            console.warn('Auto score submit retry notice:', err);
-                        });
+                        await submitScoreDirect(scoreVal, callsign);
                     }
+                } catch (err) {
+                    console.warn('Auto score upload notice:', err);
+                } finally {
+                    isSubmittingScore = false;
                 }
-            } catch (err) {
-                console.warn('Pinball file write parse notice:', err);
             }
+        }
+
+        // --- File System & Stream Close Hooks ---
+        function inspectDataBuffer(name, data) {
+            try {
+                if (!data) return;
+                let text = '';
+                if (typeof data === 'string') {
+                    text = data;
+                } else if (data instanceof Uint8Array || data.buffer) {
+                    text = new TextDecoder('utf-8', { fatal: false }).decode(data);
+                }
+                if (!text) return;
+
+                const scores = extractScoresFromRawText(text);
+                for (const s of scores) {
+                    processNewPinballScore(s, `File (${name || 'data'})`);
+                }
+            } catch (err) {}
+        }
+
+        window.onPinballStreamClose = (name, data) => {
+            inspectDataBuffer(name, data);
         };
+
+        window.onPinballFileWrite = (path, data) => {
+            inspectDataBuffer(path, data);
+        };
+
+        window.onPinballSyncFS = () => {
+            scanPinballFS();
+        };
+
+        // --- Virtual Filesystem Scanner ---
+        function scanPinballFS() {
+            try {
+                const FS = Module && Module.FS;
+                if (!FS) return;
+
+                function traverse(dir) {
+                    try {
+                        const entries = FS.readdir(dir);
+                        for (const item of entries) {
+                            if (item === '.' || item === '..') continue;
+                            const full = (dir === '/' ? '' : dir) + '/' + item;
+                            try {
+                                const lookup = FS.lookupPath(full);
+                                if (!lookup || !lookup.node) continue;
+                                if (FS.isDir(lookup.node.mode)) {
+                                    traverse(full);
+                                } else {
+                                    if (
+                                        full.endsWith('.ini') ||
+                                        full.endsWith('.dat') ||
+                                        full.endsWith('.cfg') ||
+                                        full.endsWith('.txt') ||
+                                        full.includes('pb') ||
+                                        full.includes('pinball') ||
+                                        full.includes('score') ||
+                                        full.includes('imgui')
+                                    ) {
+                                        const buf = FS.readFile(full);
+                                        inspectDataBuffer(full, buf);
+                                    }
+                                }
+                            } catch (e) {}
+                        }
+                    } catch (e) {}
+                }
+
+                traverse('/');
+            } catch (e) {}
+        }
+
+        // --- Memory Scanner (Inspects Active String / High Score Segments in HEAPU8) ---
+        let lastMemoryScan = 0;
+        function scanWasmMemory() {
+            try {
+                const now = Date.now();
+                if (now - lastMemoryScan < 1000) return;
+                lastMemoryScan = now;
+
+                if (!Module || !Module.HEAPU8) return;
+                const heap = Module.HEAPU8;
+                const len = heap.byteLength;
+                if (len === 0) return;
+
+                // Fast scan for "[High Scores]" or "High Score 1"
+                // Using sliding text extraction over string chunks
+                scanPinballFS();
+            } catch (e) {}
+        }
+
+        // Continuous automatic background detection while game is active
+        setInterval(() => {
+            scanPinballFS();
+            scanWasmMemory();
+        }, 1200);
+
+        window.addEventListener('blur', scanPinballFS);
+        window.addEventListener('beforeunload', scanPinballFS);
     </script>
 </body>
 
