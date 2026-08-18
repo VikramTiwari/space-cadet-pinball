@@ -1275,8 +1275,7 @@
         // ====================================================================
         // AUTOMATIC HIGH SCORE EXTRACTION & REAL-TIME AUTO-SUBMISSION
         // ====================================================================
-        const SUBMITTED_SCORE_KEY = 'pinball_user_highest_score';
-        let highestRecordedScore = parseInt(localStorage.getItem(SUBMITTED_SCORE_KEY) || '0', 10);
+        const submittedScoresSet = new Set(JSON.parse(sessionStorage.getItem('pinball_submitted_scores') || '[]'));
         let isSubmittingScore = false;
 
         function extractScoresFromRawText(text) {
@@ -1304,28 +1303,28 @@
         }
 
         async function processNewPinballScore(scoreVal, source = 'Game Engine') {
-            if (!scoreVal || typeof scoreVal !== 'number' || scoreVal <= 0 || scoreVal >= 2000000000) return;
+            if (!scoreVal || typeof scoreVal !== 'number' || scoreVal <= 1000 || scoreVal >= 2000000000) return;
             window.latestPinballScore = Math.max(window.latestPinballScore || 0, scoreVal);
 
-            // If score is higher than our previously recorded high score
-            if (scoreVal > highestRecordedScore && !isSubmittingScore) {
-                isSubmittingScore = true;
-                highestRecordedScore = scoreVal;
-                localStorage.setItem(SUBMITTED_SCORE_KEY, scoreVal.toString());
+            // Avoid duplicate submissions of identical score in the same session
+            if (submittedScoresSet.has(scoreVal) || isSubmittingScore) return;
 
-                console.log(`🎯 [Auto-Record] New High Score detected (${source}):`, scoreVal);
+            isSubmittingScore = true;
+            submittedScoresSet.add(scoreVal);
+            sessionStorage.setItem('pinball_submitted_scores', JSON.stringify([...submittedScoresSet]));
 
-                try {
-                    currentUser = currentUser || getStoredUser();
-                    if (currentUser) {
-                        const callsign = getCallsign(currentUser);
-                        await submitScoreDirect(scoreVal, callsign);
-                    }
-                } catch (err) {
-                    console.warn('Auto score upload notice:', err);
-                } finally {
-                    isSubmittingScore = false;
+            console.log(`🎯 [Auto-Record] New High Score detected (${source}):`, scoreVal);
+
+            try {
+                currentUser = currentUser || getStoredUser();
+                if (currentUser) {
+                    const callsign = getCallsign(currentUser);
+                    await submitScoreDirect(scoreVal, callsign);
                 }
+            } catch (err) {
+                console.warn('Auto score upload notice:', err);
+            } finally {
+                isSubmittingScore = false;
             }
         }
 
@@ -1363,7 +1362,7 @@
         // --- Virtual Filesystem Scanner ---
         function scanPinballFS() {
             try {
-                const FS = Module && Module.FS;
+                const FS = window.PinballFS || (window.Module && window.Module.FS);
                 if (!FS) return;
 
                 function traverse(dir) {
