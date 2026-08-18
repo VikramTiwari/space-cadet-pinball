@@ -866,18 +866,7 @@
             window.history.replaceState({}, '', cleanUrl);
         }
 
-        let currentUser = getStoredUser();
-        if (!currentUser) {
-            window.location.replace('login.html');
-        }
-
-        const btnSignOut = document.getElementById('btn-sign-out');
-        if (btnSignOut) {
-            btnSignOut.addEventListener('click', () => {
-                localStorage.removeItem(SSO_STORAGE_KEY);
-                window.location.replace('login.html');
-            });
-        }
+        let currentUser = null;
 
         function updateUserDisplay() {
             if (!currentUser) return;
@@ -886,6 +875,24 @@
             if (callsignDisplay) {
                 callsignDisplay.innerText = `Callsign: [ ${callsign} ]`;
             }
+        }
+
+        function enforceAuth() {
+            currentUser = getStoredUser();
+            if (!currentUser) {
+                window.location.replace('login.html');
+                return false;
+            }
+            updateUserDisplay();
+            return true;
+        }
+
+        const btnSignOut = document.getElementById('btn-sign-out');
+        if (btnSignOut) {
+            btnSignOut.addEventListener('click', () => {
+                localStorage.removeItem(SSO_STORAGE_KEY);
+                window.location.replace('login.html');
+            });
         }
 
         enforceAuth();
