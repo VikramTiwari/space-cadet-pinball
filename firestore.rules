@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /pinball_scores/{scoreId} {
+      // Anyone can read high scores
+      allow read: if true;
+      
+      // Allow inserting valid scores
+      allow create: if request.resource.data.score is int
+                    && request.resource.data.score > 0
+                    && request.resource.data.score < 2000000000
+                    && request.resource.data.playerName is string
+                    && request.resource.data.playerName.size() >= 1
+                    && request.resource.data.playerName.size() <= 30;
+                    
+      // High score records are immutable
+      allow update, delete: if false;
+    }
+  }
+}

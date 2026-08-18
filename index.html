@@ -11,24 +11,6 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0a246a">
-    <!-- Firebase App and Analytics -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDnoNZls8UrsNIa8zR3-xhC81tbqq_RZ1A",
-            authDomain: "space-cadet-pinball.firebaseapp.com",
-            projectId: "space-cadet-pinball",
-            storageBucket: "space-cadet-pinball.firebasestorage.app",
-            messagingSenderId: "140350495966",
-            appId: "1:140350495966:web:f6d0654070b25685deb64f",
-            measurementId: "G-7BWMFB1JSY"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-    </script>
     <style>
         /* Based on https://tpenguinltg.github.io/winclassic/ */
         :root {
@@ -211,6 +193,203 @@
         #status {
             margin: 40px 32px;
         }
+
+        /* Classic Windows 95 Menu Bar */
+        .menubar {
+            display: flex;
+            align-items: center;
+            background: var(--ButtonFace);
+            padding: 2px 6px;
+            font-size: 13px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            border-bottom: 1px solid var(--ButtonShadow);
+            user-select: none;
+            gap: 4px;
+        }
+
+        .menu-item {
+            padding: 3px 8px;
+            cursor: pointer;
+            border-radius: 1px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .menu-item:hover {
+            background: var(--Hilight);
+            color: var(--HilightText);
+        }
+
+        .menu-item.highlight-btn {
+            font-weight: bold;
+            background: #fef08a;
+            color: #854d0e;
+            border: 1px solid #ca8a04;
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        .menu-item.highlight-btn:hover {
+            background: #fde047;
+            color: #713f12;
+        }
+
+        /* Retro Windows 95 / Arcade Modal Dialog */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.hidden {
+            display: none !important;
+        }
+
+        .retro-dialog {
+            width: 440px;
+            max-width: 92vw;
+            background: var(--ButtonFace);
+            box-shadow: 2px 2px 0px #000, inset 1px 1px 0px #fff, inset -1px -1px 0px #808080;
+            padding: 3px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            color: black;
+            animation: popIn 0.15s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .dialog-titlebar {
+            background: linear-gradient(90deg, #0a246a 0%, #a6caf0 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dialog-close-btn {
+            background: var(--ButtonFace);
+            border: 1px solid #fff;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            color: black;
+            font-weight: bold;
+            font-size: 11px;
+            width: 16px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .dialog-close-btn:active {
+            border-color: #000;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .dialog-body {
+            padding: 12px;
+        }
+
+        .leaderboard-table-wrap {
+            background: #000;
+            border: 2px inset #808080;
+            max-height: 260px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ff66;
+            text-shadow: 0 0 3px rgba(0, 255, 102, 0.4);
+        }
+
+        .leaderboard-table th {
+            background: #1e293b;
+            color: #fef08a;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            font-size: 11px;
+            padding: 4px 6px;
+            text-align: left;
+            border-bottom: 1px solid #475569;
+            position: sticky;
+            top: 0;
+        }
+
+        .leaderboard-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .leaderboard-table tr:nth-child(1) td { color: #facc15; font-weight: bold; }
+        .leaderboard-table tr:nth-child(2) td { color: #e2e8f0; font-weight: bold; }
+        .leaderboard-table tr:nth-child(3) td { color: #fdba74; font-weight: bold; }
+
+        .rank-badge {
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            margin-left: 4px;
+        }
+
+        .retro-btn {
+            background: var(--ButtonFace);
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 4px 14px;
+            font-size: 12px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .retro-btn:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .retro-btn.primary {
+            background: #1e3a8a;
+            color: #fff;
+            border-color: #60a5fa #0f172a #0f172a #60a5fa;
+        }
+
+        .retro-input {
+            width: 100%;
+            background: #fff;
+            border: 2px inset #808080;
+            padding: 5px 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            margin-top: 4px;
+        }
+
+        .retro-input:focus {
+            border-color: #0a246a;
+        }
     </style>
 </head>
 
@@ -220,7 +399,7 @@
             <span class="titlebar-title">3D Pinball for Windows - Space Cadet</span>
             <div class="titlebar-wincontrols">
                 <ul class="buttons-wrapper">
-                    <li class="button minimize">
+                    <li class="button minimize" title="Minimize">
                         <svg xmlns="http://www.w3.org/2000/svg" width="0.125017in" height="0.104181in"
                             viewBox="0 0 12 10" class="button-content replaced-svg">
                             <path id="Minimize" fill="black" stroke="black" stroke-width="0"
@@ -228,7 +407,7 @@
                             </path>
                         </svg>
                     </li>
-                    <li class="button maximize">
+                    <li class="button maximize" id="btn-fullscreen-top" title="Toggle Fullscreen">
                         <svg xmlns="http://www.w3.org/2000/svg" width="0.125017in" height="0.104181in"
                             viewBox="0 0 12 10" class="button-content replaced-svg">
                             <path id="Maximize" fill="black" stroke="black" stroke-width="0"
@@ -237,7 +416,7 @@
                         </svg>
                     </li>
                     <li class="spacer"></li>
-                    <li class="button close">
+                    <li class="button close" title="Close">
                         <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1"
                             width="12" height="10" class="button-content replaced-svg">
                             <g transform="translate(0,-1042.3622)" id="layer1">
@@ -251,12 +430,94 @@
             </div>
         </div>
 
+        <!-- Windows 95 Menu Bar -->
+        <div class="menubar">
+            <div class="menu-item" id="btn-new-game" title="Start a New Game (F2)"><u>G</u>ame: New (F2)</div>
+            <div class="menu-item highlight-btn" id="btn-hall-of-fame" title="View Global & Family Leaderboard">🏆 <u>H</u>all of Fame</div>
+            <div class="menu-item" id="btn-submit-score-manual" title="Record High Score to Leaderboard">⭐ Post Score</div>
+            <div style="flex: 1;"></div>
+            <div class="menu-item" id="btn-toggle-fullscreen">⛶ Fullscreen</div>
+        </div>
+
         <div class="emscripten" id="status">Downloading...</div>
         <div class="emscripten">
             <progress value="0" max="100" id="progress" hidden=1></progress>
         </div>
         <canvas class="emscripten" id="canvas" style="display:none;" oncontextmenu="event.preventDefault()"
             tabindex="-1"></canvas>
+    </div>
+
+    <!-- 🏆 Hall of Fame Leaderboard Modal -->
+    <div id="hall-of-fame-modal" class="modal-overlay hidden">
+        <div class="retro-dialog">
+            <div class="dialog-titlebar">
+                <span>🏆 Space Cadet: Hall of Fame</span>
+                <button class="dialog-close-btn" id="btn-close-hof">✕</button>
+            </div>
+            <div class="dialog-body">
+                <div style="font-size: 12px; margin-bottom: 6px; color: #1e293b;">
+                    <strong>Cadet Leaderboard</strong> — Top Fleet High Scores:
+                </div>
+                <div class="leaderboard-table-wrap">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">#</th>
+                                <th>Callsign / Name</th>
+                                <th style="text-align: right;">Score</th>
+                                <th style="text-align: right; width: 85px;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #94a3b8; padding: 15px;">
+                                    Loading flight records...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <button class="retro-btn" id="btn-open-submit-from-hof">Post My Score</button>
+                    <button class="retro-btn primary" id="btn-ok-hof">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⭐ Submit High Score Modal -->
+    <div id="submit-score-modal" class="modal-overlay hidden">
+        <div class="retro-dialog" style="width: 380px;">
+            <div class="dialog-titlebar">
+                <span>⭐ Submit High Score</span>
+                <button class="dialog-close-btn" id="btn-close-submit">✕</button>
+            </div>
+            <div class="dialog-body">
+                <div style="font-size: 13px; font-weight: bold; color: #0a246a; margin-bottom: 8px;">
+                    🎉 Congratulations, Cadet!
+                </div>
+                <div style="font-size: 12px; color: #334155; margin-bottom: 12px;">
+                    Record your flight achievement in the Space Cadet Hall of Fame:
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 11px; font-weight: bold;">Score Achieved:</label>
+                    <input type="number" id="input-score" class="retro-input" style="font-family: monospace; font-size: 16px; font-weight: bold; color: #0a246a;" min="1" step="10" placeholder="0">
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 11px; font-weight: bold;">Cadet Callsign / Name:</label>
+                    <input type="text" id="input-player-name" class="retro-input" maxlength="25" placeholder="e.g. Maverick, Cadet 01">
+                </div>
+
+                <div id="submit-status-msg" style="font-size: 12px; min-height: 16px; margin-bottom: 10px; font-weight: bold;"></div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button class="retro-btn" id="btn-cancel-submit">Cancel</button>
+                    <button class="retro-btn primary" id="btn-submit-score-action">Submit Score</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div style="margin-top: 15px; color: white; font-size: 14px;">
@@ -353,6 +614,244 @@
         };
     </script>
     <script async type="text/javascript" src="SpaceCadetPinball.js"></script>
+
+    <!-- Firebase App, Firestore & Space Cadet Pinball Leaderboard Engine -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            orderBy, 
+            limit, 
+            onSnapshot, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnoNZls8UrsNIa8zR3-xhC81tbqq_RZ1A",
+            authDomain: "space-cadet-pinball.firebaseapp.com",
+            projectId: "space-cadet-pinball",
+            storageBucket: "space-cadet-pinball.firebasestorage.app",
+            messagingSenderId: "140350495966",
+            appId: "1:140350495966:web:f6d0654070b25685deb64f",
+            measurementId: "G-7BWMFB1JSY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Rank determination based on Space Cadet Pinball mission hierarchy
+        function getCadetRank(score) {
+            if (score >= 10000000) return 'Fleet Admiral';
+            if (score >= 5000000) return 'Commodore';
+            if (score >= 2000000) return 'Commander';
+            if (score >= 1000000) return 'Lieutenant';
+            if (score >= 500000) return 'Ensign';
+            return 'Cadet';
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Leaderboard Real-time Subscriber
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const scoresCol = collection(db, 'pinball_scores');
+        const scoresQuery = query(scoresCol, orderBy('score', 'desc'), limit(25));
+
+        onSnapshot(scoresQuery, (snapshot) => {
+            if (snapshot.empty) {
+                leaderboardBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center; color:#94a3b8; padding: 15px;">
+                            No scores recorded yet! Be the first cadet in the Hall of Fame!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            let rank = 1;
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const scoreFormatted = Number(data.score || 0).toLocaleString();
+                const rankTitle = data.rankTitle || getCadetRank(data.score);
+                const name = (data.playerName || 'Anonymous Cadet').trim();
+                
+                let dateStr = '—';
+                if (data.timestamp && data.timestamp.toDate) {
+                    const d = data.timestamp.toDate();
+                    dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                }
+
+                html += `
+                    <tr>
+                        <td style="font-weight: bold; color: ${rank === 1 ? '#facc15' : rank === 2 ? '#e2e8f0' : rank === 3 ? '#fdba74' : '#94a3b8'};">
+                            ${rank}
+                        </td>
+                        <td>
+                            <span style="font-weight: bold;">${escapeHtml(name)}</span>
+                            <span class="rank-badge">${rankTitle}</span>
+                        </td>
+                        <td style="text-align: right; font-weight: bold;">
+                            ${scoreFormatted}
+                        </td>
+                        <td style="text-align: right; font-size: 11px; color: #94a3b8;">
+                            ${dateStr}
+                        </td>
+                    </tr>
+                `;
+                rank++;
+            });
+            leaderboardBody.innerHTML = html;
+        }, (err) => {
+            console.warn('Firestore high scores subscription note:', err.message);
+            leaderboardBody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center; color:#ef4444; padding: 15px;">
+                        Leaderboard offline or initializing. You can still post scores!
+                    </td>
+                </tr>
+            `;
+        });
+
+        // Modal Management
+        const hofModal = document.getElementById('hall-of-fame-modal');
+        const submitModal = document.getElementById('submit-score-modal');
+        const inputScore = document.getElementById('input-score');
+        const inputPlayerName = document.getElementById('input-player-name');
+        const submitStatusMsg = document.getElementById('submit-status-msg');
+        const btnSubmitAction = document.getElementById('btn-submit-score-action');
+
+        // Autofill player name from localStorage
+        const savedName = localStorage.getItem('pinball_player_name') || '';
+        if (savedName) inputPlayerName.value = savedName;
+
+        window.openHallOfFame = () => hofModal.classList.remove('hidden');
+        window.closeHallOfFame = () => hofModal.classList.add('hidden');
+
+        window.openSubmitScore = (prefillScore) => {
+            if (prefillScore) {
+                inputScore.value = prefillScore;
+            } else if (!inputScore.value || inputScore.value === '0') {
+                inputScore.value = window.latestPinballScore || '';
+            }
+            submitStatusMsg.innerText = '';
+            submitModal.classList.remove('hidden');
+            setTimeout(() => inputPlayerName.focus(), 50);
+        };
+        window.closeSubmitScore = () => submitModal.classList.add('hidden');
+
+        document.getElementById('btn-hall-of-fame').addEventListener('click', window.openHallOfFame);
+        document.getElementById('btn-close-hof').addEventListener('click', window.closeHallOfFame);
+        document.getElementById('btn-ok-hof').addEventListener('click', window.closeHallOfFame);
+
+        document.getElementById('btn-submit-score-manual').addEventListener('click', () => window.openSubmitScore());
+        document.getElementById('btn-open-submit-from-hof').addEventListener('click', () => {
+            window.closeHallOfFame();
+            window.openSubmitScore();
+        });
+        document.getElementById('btn-close-submit').addEventListener('click', window.closeSubmitScore);
+        document.getElementById('btn-cancel-submit').addEventListener('click', window.closeSubmitScore);
+
+        // Submit Score Logic
+        btnSubmitAction.addEventListener('click', async () => {
+            const scoreVal = parseInt(inputScore.value, 10);
+            const nameVal = inputPlayerName.value.trim() || 'Cadet';
+
+            if (isNaN(scoreVal) || scoreVal <= 0) {
+                submitStatusMsg.style.color = '#dc2626';
+                submitStatusMsg.innerText = '❌ Please enter a valid positive score!';
+                return;
+            }
+
+            localStorage.setItem('pinball_player_name', nameVal);
+            submitStatusMsg.style.color = '#0a246a';
+            submitStatusMsg.innerText = 'Transmitting flight record to Starfleet...';
+            btnSubmitAction.disabled = true;
+
+            try {
+                const rankTitle = getCadetRank(scoreVal);
+                await addDoc(scoresCol, {
+                    playerName: nameVal,
+                    score: scoreVal,
+                    rankTitle: rankTitle,
+                    timestamp: serverTimestamp()
+                });
+
+                submitStatusMsg.style.color = '#15803d';
+                submitStatusMsg.innerText = `✔ Score recorded! Rank: ${rankTitle}`;
+                setTimeout(() => {
+                    btnSubmitAction.disabled = false;
+                    window.closeSubmitScore();
+                    window.openHallOfFame();
+                }, 900);
+            } catch (err) {
+                console.error('Score submission error:', err);
+                submitStatusMsg.style.color = '#dc2626';
+                submitStatusMsg.innerText = '❌ Failed to submit: ' + (err.message || 'Check connection');
+                btnSubmitAction.disabled = false;
+            }
+        });
+
+        // Game Menu Actions
+        document.getElementById('btn-new-game').addEventListener('click', () => {
+            const canvas = document.getElementById('canvas');
+            if (canvas) canvas.focus();
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F2', keyCode: 113, which: 113, bubbles: true }));
+            setTimeout(() => {
+                window.dispatchEvent(new KeyboardEvent('keyup', { key: 'F2', keyCode: 113, which: 113, bubbles: true }));
+            }, 50);
+        });
+
+        const toggleFullscreen = () => {
+            const elem = document.querySelector('.window') || document.documentElement;
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen?.().catch(() => {});
+            } else {
+                document.exitFullscreen?.().catch(() => {});
+            }
+        };
+        document.getElementById('btn-toggle-fullscreen').addEventListener('click', toggleFullscreen);
+        document.getElementById('btn-fullscreen-top').addEventListener('click', toggleFullscreen);
+
+        // Automatic Score Extraction via Emscripten File Write Interceptor
+        let lastProcessedScore = 0;
+        window.onPinballFileWrite = (path, data) => {
+            try {
+                if (!path.endsWith('.ini') && !path.includes('pb') && !path.includes('imgui')) return;
+                const text = new TextDecoder().decode(data);
+                
+                // Parse scores from INI text
+                const scoreMatches = [...text.matchAll(/(?:High Score \d+|Score|\.Score)\s*=?\s*(\d+)/gi)];
+                let maxScore = 0;
+                for (const match of scoreMatches) {
+                    const val = parseInt(match[1], 10);
+                    if (!isNaN(val) && val > maxScore && val < 2000000000) {
+                        maxScore = val;
+                    }
+                }
+
+                if (maxScore > 0 && maxScore > lastProcessedScore) {
+                    lastProcessedScore = maxScore;
+                    window.latestPinballScore = maxScore;
+                    console.log('🎯 Detected Pinball High Score:', maxScore);
+                    
+                    // Prompt user if it is a new high score
+                    setTimeout(() => {
+                        window.openSubmitScore(maxScore);
+                    }, 800);
+                }
+            } catch (err) {
+                console.warn('Pinball file write parse notice:', err);
+            }
+        };
+    </script>
 </body>
 
 </html>

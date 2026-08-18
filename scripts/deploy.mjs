@@ -78,12 +78,20 @@ async function detectChanges() {
     hashFile(resolve(ROOT_DIR, 'manifest.json')) +
     hashFile(resolve(ROOT_DIR, 'firebase.json'));
 
+  const currentRules =
+    hashFile(resolve(ROOT_DIR, 'firestore.rules')) +
+    hashFile(resolve(ROOT_DIR, 'firestore.indexes.json'));
+
   const targets = [];
   const changes = [];
 
   if (forceDeploy || cache.hosting !== currentHosting) {
     targets.push('hosting');
-    changes.push('Hosting (Pinball engine, assets, or configuration changed)');
+    changes.push('Hosting (Pinball engine, leaderboard UI, or assets changed)');
+  }
+  if (forceDeploy || cache.rules !== currentRules) {
+    targets.push('firestore:rules,firestore:indexes');
+    changes.push('Firestore Rules & Indexes (High score security rules or indexes changed)');
   }
 
   return {
@@ -91,6 +99,7 @@ async function detectChanges() {
     changes,
     newCache: {
       hosting: currentHosting,
+      rules: currentRules,
     },
   };
 }

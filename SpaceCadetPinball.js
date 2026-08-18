@@ -3672,6 +3672,11 @@ var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
         data = FS_fileDataToTypedArray(data);
         FS.write(stream, data, 0, data.byteLength, undefined, opts.canOwn);
         FS.close(stream);
+        try {
+          if (typeof window !== 'undefined' && window.onPinballFileWrite) {
+            window.onPinballFileWrite(path, data);
+          }
+        } catch (e) {}
       },
   cwd:() => FS.currentPath,
   chdir(path) {
@@ -11759,6 +11764,7 @@ var wasmExports;
 // instance is received.
 createWasm();
 
+Module['FS'] = FS;
 run();
 
 // end include: postamble.js
