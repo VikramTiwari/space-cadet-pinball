@@ -2,11 +2,41 @@ import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
+import { createHash } from 'crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = resolve(__dirname, '..');
+const CACHE_FILE = resolve(ROOT_DIR, '.icon-cache.json');
 
 const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+
+const force = process.argv.includes('--force');
+const svgPath = resolve(ROOT_DIR, 'favicon.svg');
+const svgContent = readFileSync(svgPath, 'utf8');
+const svgHash = createHash('sha256').update(svgContent).digest('hex');
+
+const requiredFiles = [
+  resolve(ROOT_DIR, 'icon-512.png'),
+  resolve(ROOT_DIR, 'favicon.png'),
+  resolve(ROOT_DIR, 'icon-192.png'),
+  resolve(ROOT_DIR, 'apple-touch-icon.png'),
+  resolve(ROOT_DIR, 'icon-maskable-512.png'),
+  resolve(ROOT_DIR, 'favicon-32x32.png')
+];
+
+let cachedHash = '';
+if (existsSync(CACHE_FILE)) {
+  try {
+    cachedHash = JSON.parse(readFileSync(CACHE_FILE, 'utf8')).hash;
+  } catch {}
+}
+
+const allExist = requiredFiles.every(f => existsSync(f));
+
+if (!force && allExist && cachedHash === svgHash) {
+  console.log('⚡ Icons are up to date (favicon.svg unchanged). Skipping raster generation.');
+  process.exit(0);
+}
 
 function renderSvgToPng(svgPath, outputPath, size) {
   const svgContent = readFileSync(svgPath, 'utf8');
@@ -61,7 +91,6 @@ function renderSvgToPng(svgPath, outputPath, size) {
   }
 }
 
-const svgPath = resolve(ROOT_DIR, 'favicon.svg');
 console.log('Rendering 100% exact PNG icons from Space Cadet Pinball favicon.svg...');
 
 renderSvgToPng(svgPath, resolve(ROOT_DIR, 'icon-512.png'), 512);
@@ -71,4 +100,5 @@ renderSvgToPng(svgPath, resolve(ROOT_DIR, 'apple-touch-icon.png'), 180);
 renderSvgToPng(svgPath, resolve(ROOT_DIR, 'icon-maskable-512.png'), 512);
 renderSvgToPng(svgPath, resolve(ROOT_DIR, 'favicon-32x32.png'), 32);
 
+writeFileSync(CACHE_FILE, JSON.stringify({ hash: svgHash, updatedAt: new Date().toISOString() }, null, 2) + '\n');
 console.log('All Space Cadet Pinball PNG icons rendered successfully!');
