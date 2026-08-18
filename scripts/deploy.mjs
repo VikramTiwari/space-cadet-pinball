@@ -181,9 +181,8 @@ async function pruneHostingDeployments(token) {
 }
 
 async function main() {
-  const token = getAccessToken();
-
   if (cleanOnly) {
+    const token = getAccessToken();
     if (token) await pruneHostingDeployments(token);
     return;
   }
@@ -191,8 +190,9 @@ async function main() {
   const { targets, changes, newCache } = await detectChanges();
   const didDeploy = buildAndDeploy(targets, changes, newCache);
 
-  if (didDeploy && token) {
-    await pruneHostingDeployments(token);
+  if (didDeploy) {
+    const token = getAccessToken();
+    if (token) await pruneHostingDeployments(token);
   }
 }
 
