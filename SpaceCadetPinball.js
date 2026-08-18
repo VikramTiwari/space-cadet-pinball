@@ -585,6 +585,9 @@ function missingLibrarySymbol(sym) {
 }
 
 function unexportedRuntimeSymbol(sym) {
+  if (sym === 'FS' || sym === 'HEAPU8' || sym === 'HEAP32' || sym === 'HEAPU32') {
+    return;
+  }
   if (!Object.getOwnPropertyDescriptor(Module, sym)) {
     Object.defineProperty(Module, sym, {
       configurable: true,
@@ -11772,7 +11775,14 @@ var wasmExports;
 // instance is received.
 createWasm();
 
-Module['FS'] = FS;
+try {
+  Object.defineProperty(Module, 'FS', { value: FS, writable: true, configurable: true, enumerable: true });
+} catch (e) {
+  Module['FS'] = FS;
+}
+if (typeof window !== 'undefined') {
+  window.PinballFS = FS;
+}
 run();
 
 // end include: postamble.js
