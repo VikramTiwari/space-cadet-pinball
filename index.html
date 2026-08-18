@@ -447,6 +447,27 @@
             tabindex="-1"></canvas>
     </div>
 
+    <!-- 🔒 Starfleet Auth Required Modal -->
+    <div id="auth-required-modal" class="modal-overlay hidden">
+        <div class="retro-dialog" style="width: 420px; text-align: center;">
+            <div class="dialog-titlebar">
+                <span>🔒 Starfleet Security Checkpoint</span>
+            </div>
+            <div class="dialog-body" style="padding: 20px 16px;">
+                <div style="font-size: 32px; margin-bottom: 10px;">🚀</div>
+                <div style="font-size: 14px; font-weight: bold; color: #0a246a; margin-bottom: 8px;">
+                    Starfleet Authorization Required
+                </div>
+                <div style="font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 18px;">
+                    Welcome Cadet! To play <strong>3D Space Cadet Pinball</strong> and record your flight achievements to the Hall of Fame, please authenticate through the Family Portal.
+                </div>
+                <button class="retro-btn primary" id="btn-login-portal" style="padding: 8px 24px; font-size: 13px;">
+                    🚀 Authenticate via Family Portal
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 🏆 Hall of Fame Leaderboard Modal -->
     <div id="hall-of-fame-modal" class="modal-overlay hidden">
         <div class="retro-dialog">
@@ -455,22 +476,24 @@
                 <button class="dialog-close-btn" id="btn-close-hof">✕</button>
             </div>
             <div class="dialog-body">
-                <div style="font-size: 12px; margin-bottom: 6px; color: #1e293b;">
-                    <strong>Cadet Leaderboard</strong> — Top Fleet High Scores:
+                <div style="font-size: 12px; margin-bottom: 6px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
+                    <span><strong>Cadet Leaderboard</strong> — Top Fleet High Scores:</span>
+                    <span id="active-callsign-display" style="font-size: 11px; font-weight: bold; color: #0a246a;"></span>
                 </div>
                 <div class="leaderboard-table-wrap">
                     <table class="leaderboard-table">
                         <thead>
                             <tr>
-                                <th style="width: 40px;">#</th>
-                                <th>Callsign / Name</th>
+                                <th style="width: 35px;">#</th>
+                                <th style="width: 70px;">Callsign</th>
+                                <th>Rank Title</th>
                                 <th style="text-align: right;">Score</th>
-                                <th style="text-align: right; width: 85px;">Date</th>
+                                <th style="text-align: right; width: 75px;">Date</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboard-body">
                             <tr>
-                                <td colspan="4" style="text-align: center; color: #94a3b8; padding: 15px;">
+                                <td colspan="5" style="text-align: center; color: #94a3b8; padding: 15px;">
                                     Loading flight records...
                                 </td>
                             </tr>
@@ -478,7 +501,7 @@
                     </table>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                    <button class="retro-btn" id="btn-open-submit-from-hof">Post My Score</button>
+                    <button class="retro-btn" id="btn-open-submit-from-hof">Post Score</button>
                     <button class="retro-btn primary" id="btn-ok-hof">OK</button>
                 </div>
             </div>
@@ -494,10 +517,10 @@
             </div>
             <div class="dialog-body">
                 <div style="font-size: 13px; font-weight: bold; color: #0a246a; margin-bottom: 8px;">
-                    🎉 Congratulations, Cadet!
+                    🎉 Flight Record Complete!
                 </div>
                 <div style="font-size: 12px; color: #334155; margin-bottom: 12px;">
-                    Record your flight achievement in the Space Cadet Hall of Fame:
+                    Record your score to the Space Cadet Hall of Fame:
                 </div>
 
                 <div style="margin-bottom: 10px;">
@@ -506,8 +529,8 @@
                 </div>
 
                 <div style="margin-bottom: 12px;">
-                    <label style="font-size: 11px; font-weight: bold;">Cadet Callsign / Name:</label>
-                    <input type="text" id="input-player-name" class="retro-input" maxlength="25" placeholder="e.g. Maverick, Cadet 01">
+                    <label style="font-size: 11px; font-weight: bold;">Cadet Callsign (3 Letters):</label>
+                    <input type="text" id="input-player-name" class="retro-input" maxlength="3" style="font-family: monospace; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;" placeholder="CAD">
                 </div>
 
                 <div id="submit-status-msg" style="font-size: 12px; min-height: 16px; margin-bottom: 10px; font-weight: bold;"></div>
@@ -520,14 +543,16 @@
         </div>
     </div>
 
+    <!-- 🚀 Score Toast Notification -->
+    <div id="score-toast" style="position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #38bdf8; border: 2px solid #38bdf8; padding: 10px 16px; font-family: 'Courier New', monospace; font-size: 13px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10000; transition: opacity 0.3s; opacity: 0; pointer-events: none;">
+    </div>
+
     <div style="margin-top: 15px; color: white; font-size: 14px;">
         Powered by the open-source decompilation project: 
         <a href="https://github.com/k4zmu2a/SpaceCadetPinball" target="_blank" style="color: #a6caf0; text-decoration: none;">
             <strong>k4zmu2a/SpaceCadetPinball</strong>
         </a>
     </div>
-
-    <!--<textarea class="emscripten" id="output" rows="8"></textarea>-->
 
     <script type='text/javascript'>
         var statusElement = document.getElementById('status');
@@ -537,20 +562,9 @@
             preRun: [],
             postRun: [],
             print: (function () {
-                var element = document.getElementById('output');
-                if (element) element.value = ''; // clear browser cache
                 return function (text) {
                     if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                    // These replacements are necessary if you render to raw HTML
-                    //text = text.replace(/&/g, "&amp;");
-                    //text = text.replace(/</g, "&lt;");
-                    //text = text.replace(/>/g, "&gt;");
-                    //text = text.replace('\n', '<br>', 'g');
                     console.log(text);
-                    /*if (element) {
-                        element.value += text + "\n";
-                        element.scrollTop = element.scrollHeight; // focus on bottom
-                    }*/
                 };
             })(),
             printErr: function (text) {
@@ -559,12 +573,7 @@
             },
             canvas: (function () {
                 var canvas = document.getElementById('canvas');
-
-                // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-                // application robust, you may want to override this behavior before shipping!
-                // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
                 canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-
                 return canvas;
             })(),
             setStatus: function (text) {
@@ -573,7 +582,7 @@
 
                 var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
                 var now = Date.now();
-                if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+                if (m && now - Module.setStatus.last.time < 30) return;
                 Module.setStatus.last.time = now;
                 Module.setStatus.last.text = text;
                 if (m) {
@@ -615,7 +624,7 @@
     </script>
     <script async type="text/javascript" src="SpaceCadetPinball.js"></script>
 
-    <!-- Firebase App, Firestore & Space Cadet Pinball Leaderboard Engine -->
+    <!-- Firebase App, Firestore & Portal SSO Leaderboard Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
@@ -644,7 +653,107 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Rank determination based on Space Cadet Pinball mission hierarchy
+        // ====================================================================
+        // PORTAL SSO AUTHENTICATION SERVICE
+        // ====================================================================
+        const SSO_STORAGE_KEY = 'pinball_portal_user';
+        const PORTAL_URL = 'https://portal.vikramtiwari.com';
+
+        function parseSSOTicket(ticket) {
+            try {
+                const parts = ticket.split('.');
+                if (parts.length < 2) return null;
+                const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+                const json = decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                );
+                const payload = JSON.parse(json);
+                return {
+                    userId: payload.userId || payload.sub || 'cadet',
+                    name: payload.name || payload.displayName || 'Space Cadet',
+                    email: payload.email || '',
+                    role: payload.role || 'member',
+                    expiresAt: payload.expiresAt || payload.exp || 0
+                };
+            } catch (err) {
+                console.warn('Failed to decode SSO ticket payload:', err);
+                return null;
+            }
+        }
+
+        function getStoredUser() {
+            try {
+                const raw = localStorage.getItem(SSO_STORAGE_KEY);
+                if (!raw) return null;
+                const u = JSON.parse(raw);
+                if (u.expiresAt && u.expiresAt * 1000 < Date.now()) {
+                    localStorage.removeItem(SSO_STORAGE_KEY);
+                    return null;
+                }
+                return u;
+            } catch {
+                return null;
+            }
+        }
+
+        function getCallsign(u) {
+            if (!u) return 'CAD';
+            const raw = u.userId || u.name || 'CAD';
+            const clean = raw.replace(/[^a-zA-Z0-9]/g, '').slice(0, 3).toUpperCase();
+            return clean.padEnd(3, 'X');
+        }
+
+        // Process URL SSO Ticket
+        const urlParams = new URLSearchParams(window.location.search);
+        const ssoTicket = urlParams.get('ssoTicket') || urlParams.get('token');
+        if (ssoTicket) {
+            const parsedUser = parseSSOTicket(ssoTicket);
+            if (parsedUser) {
+                localStorage.setItem(SSO_STORAGE_KEY, JSON.stringify(parsedUser));
+                console.log('✔ Portal SSO Authenticated:', parsedUser);
+            }
+            // Clean URL params
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+        }
+
+        let currentUser = getStoredUser();
+
+        // Enforce Authentication Check
+        const authModal = document.getElementById('auth-required-modal');
+        const btnLoginPortal = document.getElementById('btn-login-portal');
+
+        function enforceAuth() {
+            if (!currentUser) {
+                authModal.classList.remove('hidden');
+            } else {
+                authModal.classList.add('hidden');
+                updateUserDisplay();
+            }
+        }
+
+        btnLoginPortal.addEventListener('click', () => {
+            const target = `${PORTAL_URL}/?app=pinball&redirect_uri=${encodeURIComponent(window.location.href)}`;
+            window.location.href = target;
+        });
+
+        function updateUserDisplay() {
+            if (!currentUser) return;
+            const callsign = getCallsign(currentUser);
+            const callsignDisplay = document.getElementById('active-callsign-display');
+            if (callsignDisplay) {
+                callsignDisplay.innerText = `Callsign: [ ${callsign} ]`;
+            }
+        }
+
+        enforceAuth();
+
+        // ====================================================================
+        // CADET RANKS & TOAST SYSTEM
+        // ====================================================================
         function getCadetRank(score) {
             if (score >= 10000000) return 'Fleet Admiral';
             if (score >= 5000000) return 'Commodore';
@@ -654,11 +763,22 @@
             return 'Cadet';
         }
 
+        function showToast(message) {
+            const toast = document.getElementById('score-toast');
+            toast.innerText = message;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 4500);
+        }
+
         function escapeHtml(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        // Leaderboard Real-time Subscriber
+        // ====================================================================
+        // FIRESTORE LEADERBOARD & REAL-TIME LISTENER
+        // ====================================================================
         const leaderboardBody = document.getElementById('leaderboard-body');
         const scoresCol = collection(db, 'pinball_scores');
         const scoresQuery = query(scoresCol, orderBy('score', 'desc'), limit(25));
@@ -667,7 +787,7 @@
             if (snapshot.empty) {
                 leaderboardBody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align:center; color:#94a3b8; padding: 15px;">
+                        <td colspan="5" style="text-align:center; color:#94a3b8; padding: 15px;">
                             No scores recorded yet! Be the first cadet in the Hall of Fame!
                         </td>
                     </tr>
@@ -681,7 +801,7 @@
                 const data = doc.data();
                 const scoreFormatted = Number(data.score || 0).toLocaleString();
                 const rankTitle = data.rankTitle || getCadetRank(data.score);
-                const name = (data.playerName || 'Anonymous Cadet').trim();
+                const callsign = (data.playerName || 'CAD').slice(0, 3).toUpperCase();
                 
                 let dateStr = '—';
                 if (data.timestamp && data.timestamp.toDate) {
@@ -694,11 +814,13 @@
                         <td style="font-weight: bold; color: ${rank === 1 ? '#facc15' : rank === 2 ? '#e2e8f0' : rank === 3 ? '#fdba74' : '#94a3b8'};">
                             ${rank}
                         </td>
+                        <td style="font-weight: bold; color: #38bdf8; font-family: monospace; font-size: 14px;">
+                            ${escapeHtml(callsign)}
+                        </td>
                         <td>
-                            <span style="font-weight: bold;">${escapeHtml(name)}</span>
                             <span class="rank-badge">${rankTitle}</span>
                         </td>
-                        <td style="text-align: right; font-weight: bold;">
+                        <td style="text-align: right; font-weight: bold; font-family: monospace;">
                             ${scoreFormatted}
                         </td>
                         <td style="text-align: right; font-size: 11px; color: #94a3b8;">
@@ -713,14 +835,16 @@
             console.warn('Firestore high scores subscription note:', err.message);
             leaderboardBody.innerHTML = `
                 <tr>
-                    <td colspan="4" style="text-align:center; color:#ef4444; padding: 15px;">
-                        Leaderboard offline or initializing. You can still post scores!
+                    <td colspan="5" style="text-align:center; color:#ef4444; padding: 15px;">
+                        Leaderboard connecting... Scores are saved securely.
                     </td>
                 </tr>
             `;
         });
 
-        // Modal Management
+        // ====================================================================
+        // MODALS & ACTIONS
+        // ====================================================================
         const hofModal = document.getElementById('hall-of-fame-modal');
         const submitModal = document.getElementById('submit-score-modal');
         const inputScore = document.getElementById('input-score');
@@ -728,22 +852,25 @@
         const submitStatusMsg = document.getElementById('submit-status-msg');
         const btnSubmitAction = document.getElementById('btn-submit-score-action');
 
-        // Autofill player name from localStorage
-        const savedName = localStorage.getItem('pinball_player_name') || '';
-        if (savedName) inputPlayerName.value = savedName;
-
-        window.openHallOfFame = () => hofModal.classList.remove('hidden');
+        window.openHallOfFame = () => {
+            updateUserDisplay();
+            hofModal.classList.remove('hidden');
+        };
         window.closeHallOfFame = () => hofModal.classList.add('hidden');
 
         window.openSubmitScore = (prefillScore) => {
+            if (!currentUser) {
+                enforceAuth();
+                return;
+            }
             if (prefillScore) {
                 inputScore.value = prefillScore;
             } else if (!inputScore.value || inputScore.value === '0') {
                 inputScore.value = window.latestPinballScore || '';
             }
+            inputPlayerName.value = getCallsign(currentUser);
             submitStatusMsg.innerText = '';
             submitModal.classList.remove('hidden');
-            setTimeout(() => inputPlayerName.focus(), 50);
         };
         window.closeSubmitScore = () => submitModal.classList.add('hidden');
 
@@ -759,10 +886,26 @@
         document.getElementById('btn-close-submit').addEventListener('click', window.closeSubmitScore);
         document.getElementById('btn-cancel-submit').addEventListener('click', window.closeSubmitScore);
 
-        // Submit Score Logic
+        async function submitScoreDirect(scoreVal, callsignVal) {
+            if (!currentUser) {
+                enforceAuth();
+                return;
+            }
+            const rankTitle = getCadetRank(scoreVal);
+            await addDoc(scoresCol, {
+                playerName: callsignVal,
+                userId: currentUser.userId || 'cadet',
+                userEmail: currentUser.email || '',
+                score: scoreVal,
+                rankTitle: rankTitle,
+                timestamp: serverTimestamp()
+            });
+            showToast(`🚀 [${callsignVal}] High Score Recorded: ${scoreVal.toLocaleString()} (${rankTitle})`);
+        }
+
         btnSubmitAction.addEventListener('click', async () => {
             const scoreVal = parseInt(inputScore.value, 10);
-            const nameVal = inputPlayerName.value.trim() || 'Cadet';
+            const callsignVal = (inputPlayerName.value.trim() || getCallsign(currentUser)).slice(0, 3).toUpperCase();
 
             if (isNaN(scoreVal) || scoreVal <= 0) {
                 submitStatusMsg.style.color = '#dc2626';
@@ -770,27 +913,19 @@
                 return;
             }
 
-            localStorage.setItem('pinball_player_name', nameVal);
             submitStatusMsg.style.color = '#0a246a';
             submitStatusMsg.innerText = 'Transmitting flight record to Starfleet...';
             btnSubmitAction.disabled = true;
 
             try {
-                const rankTitle = getCadetRank(scoreVal);
-                await addDoc(scoresCol, {
-                    playerName: nameVal,
-                    score: scoreVal,
-                    rankTitle: rankTitle,
-                    timestamp: serverTimestamp()
-                });
-
+                await submitScoreDirect(scoreVal, callsignVal);
                 submitStatusMsg.style.color = '#15803d';
-                submitStatusMsg.innerText = `✔ Score recorded! Rank: ${rankTitle}`;
+                submitStatusMsg.innerText = `✔ Score recorded for [${callsignVal}]!`;
                 setTimeout(() => {
                     btnSubmitAction.disabled = false;
                     window.closeSubmitScore();
                     window.openHallOfFame();
-                }, 900);
+                }, 800);
             } catch (err) {
                 console.error('Score submission error:', err);
                 submitStatusMsg.style.color = '#dc2626';
@@ -820,7 +955,9 @@
         document.getElementById('btn-toggle-fullscreen').addEventListener('click', toggleFullscreen);
         document.getElementById('btn-fullscreen-top').addEventListener('click', toggleFullscreen);
 
-        // Automatic Score Extraction via Emscripten File Write Interceptor
+        // ====================================================================
+        // AUTOMATIC HIGH SCORE EXTRACTION & AUTO-SUBMISSION
+        // ====================================================================
         let lastProcessedScore = 0;
         window.onPinballFileWrite = (path, data) => {
             try {
@@ -841,11 +978,14 @@
                     lastProcessedScore = maxScore;
                     window.latestPinballScore = maxScore;
                     console.log('🎯 Detected Pinball High Score:', maxScore);
-                    
-                    // Prompt user if it is a new high score
-                    setTimeout(() => {
-                        window.openSubmitScore(maxScore);
-                    }, 800);
+
+                    // Auto-record with authenticated user's 3-letter callsign
+                    if (currentUser) {
+                        const callsign = getCallsign(currentUser);
+                        submitScoreDirect(maxScore, callsign).catch(err => {
+                            console.warn('Auto score submit retry notice:', err);
+                        });
+                    }
                 }
             } catch (err) {
                 console.warn('Pinball file write parse notice:', err);
