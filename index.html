@@ -139,8 +139,13 @@
         }
 
         /* Fullscreen Game Container & Canvas Mode */
+        #game-container.is-fullscreen,
+        body.css-fullscreen #game-container,
         #game-container:fullscreen,
         #game-container:-webkit-full-screen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
             background-color: #000000 !important;
@@ -149,8 +154,11 @@
             align-items: center !important;
             margin: 0 !important;
             padding: 0 !important;
+            z-index: 99999 !important;
         }
 
+        #game-container.is-fullscreen canvas.emscripten,
+        body.css-fullscreen #game-container canvas.emscripten,
         #game-container:fullscreen canvas.emscripten,
         #game-container:-webkit-full-screen canvas.emscripten {
             width: auto !important;
@@ -180,15 +188,20 @@
             display: none;
             gap: 8px;
             transition: transform 0.2s ease-in-out;
-            z-index: 99999;
+            z-index: 999999;
         }
 
+        #game-container.is-fullscreen .fullscreen-hud-bar,
+        body.css-fullscreen #game-container .fullscreen-hud-bar,
         #game-container:fullscreen .fullscreen-hud-bar,
         #game-container:-webkit-full-screen .fullscreen-hud-bar {
             display: flex;
         }
 
-        #game-container:hover .fullscreen-hud-bar {
+        #game-container.is-fullscreen:hover .fullscreen-hud-bar,
+        body.css-fullscreen #game-container:hover .fullscreen-hud-bar,
+        #game-container:fullscreen:hover .fullscreen-hud-bar,
+        #game-container:-webkit-full-screen:hover .fullscreen-hud-bar {
             transform: translateX(-50%) translateY(0);
         }
 
@@ -1114,45 +1127,123 @@
             }, 50);
         };
 
-        document.getElementById('btn-new-game').addEventListener('click', triggerNewGame);
-        document.getElementById('btn-hud-new-game').addEventListener('click', triggerNewGame);
-        document.getElementById('btn-hud-hof').addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen?.().catch(() => {});
-            }
-            window.openHallOfFame();
-        });
-        document.getElementById('btn-hud-exit-fs').addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen?.().catch(() => {});
-            }
-        });
+        const isFullscreenActive = () => {
+            return Boolean(
+                document.fullscreenElement ||
+                (document as any).webkitFullscreenElement ||
+                (document as any).mozFullScreenElement ||
+                (document as any).msFullscreenElement ||
+                document.body.classList.contains('css-fullscreen') ||
+                document.getElementById('game-container')?.classList.contains('is-fullscreen')
+            );
+        };
 
-        const toggleFullscreen = async () => {
-            const container = document.getElementById('game-container') || document.getElementById('canvas');
+        const enterFullscreen = async () => {
+            const container = document.getElementById('game-container') || document.documentElement;
             const canvas = document.getElementById('canvas');
-            if (!document.fullscreenElement) {
-                try {
+
+            document.body.classList.add('css-fullscreen');
+            container.classList.add('is-fullscreen');
+
+            try {
+                if (container.requestFullscreen) {
                     await container.requestFullscreen();
-                    if (canvas) canvas.focus();
-                } catch (e) {
-                    console.warn('Fullscreen error:', e);
+                } else if ((container as any).webkitRequestFullscreen) {
+                    (container as any).webkitRequestFullscreen();
+                } else if ((container as any).mozRequestFullScreen) {
+                    (container as any).mozRequestFullScreen();
+                } else if ((container as any).msRequestFullscreen) {
+                    (container as any).msRequestFullscreen();
                 }
+            } catch (e) {
+                console.warn('Native requestFullscreen notice:', e);
+            }
+
+            if (canvas) setTimeout(() => canvas.focus(), 150);
+        };
+
+        const exitFullscreen = async () => {
+            const container = document.getElementById('game-container') || document.documentElement;
+            const canvas = document.getElementById('canvas');
+
+            document.body.classList.remove('css-fullscreen');
+            container.classList.remove('is-fullscreen');
+
+            try {
+                const hasFs = document.fullscreenElement ||
+                    (document as any).webkitFullscreenElement ||
+                    (document as any).mozFullScreenElement ||
+                    (document as any).msFullscreenElement;
+
+                if (hasFs) {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen().catch(() => {});
+                    } else if ((document as any).webkitExitFullscreen) {
+                        (document as any).webkitExitFullscreen();
+                    } else if ((document as any).mozCancelFullScreen) {
+                        (document as any).mozCancelFullScreen();
+                    } else if ((document as any).msExitFullscreen) {
+                        (document as any).msExitFullscreen();
+                    }
+                }
+            } catch (e) {}
+
+            if (canvas) setTimeout(() => canvas.focus(), 150);
+        };
+
+        const toggleFullscreen = () => {
+            if (isFullscreenActive()) {
+                exitFullscreen();
             } else {
-                if (document.exitFullscreen) {
-                    await document.exitFullscreen().catch(() => {});
-                    if (canvas) canvas.focus();
-                }
+                enterFullscreen();
             }
         };
-        document.getElementById('btn-toggle-fullscreen').addEventListener('click', toggleFullscreen);
-        document.getElementById('btn-fullscreen-top').addEventListener('click', toggleFullscreen);
 
-        // Keep canvas focused on fullscreen change
-        document.addEventListener('fullscreenchange', () => {
-            const canvas = document.getElementById('canvas');
-            if (canvas) setTimeout(() => canvas.focus(), 100);
+        document.getElementById('btn-new-game')?.addEventListener('click', triggerNewGame);
+        document.getElementById('btn-hud-new-game')?.addEventListener('click', triggerNewGame);
+        document.getElementById('btn-hud-hof')?.addEventListener('click', () => {
+            exitFullscreen();
+            window.openHallOfFame();
         });
+        document.getElementById('btn-hud-exit-fs')?.addEventListener('click', exitFullscreen);
+        document.getElementById('btn-toggle-fullscreen')?.addEventListener('click', toggleFullscreen);
+        document.getElementById('btn-fullscreen-top')?.addEventListener('click', toggleFullscreen);
+
+        // Double-click titlebar to toggle fullscreen
+        document.querySelector('.titlebar')?.addEventListener('dblclick', (e) => {
+            if (e.target && (e.target as HTMLElement).closest('.button')) return;
+            toggleFullscreen();
+        });
+
+        // Keyboard shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isFullscreenActive()) {
+                exitFullscreen();
+            }
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        const syncFullscreenState = () => {
+            const hasNativeFs = Boolean(
+                document.fullscreenElement ||
+                (document as any).webkitFullscreenElement ||
+                (document as any).mozFullScreenElement ||
+                (document as any).msFullscreenElement
+            );
+            if (!hasNativeFs && !document.body.classList.contains('css-fullscreen')) {
+                document.getElementById('game-container')?.classList.remove('is-fullscreen');
+            }
+            const canvas = document.getElementById('canvas');
+            if (canvas) setTimeout(() => canvas.focus(), 150);
+        };
+
+        document.addEventListener('fullscreenchange', syncFullscreenState);
+        document.addEventListener('webkitfullscreenchange', syncFullscreenState);
+        document.addEventListener('mozfullscreenchange', syncFullscreenState);
+        document.addEventListener('MSFullscreenChange', syncFullscreenState);
 
         // ====================================================================
         // AUTOMATIC HIGH SCORE EXTRACTION & AUTO-SUBMISSION
