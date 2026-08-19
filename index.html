@@ -404,199 +404,38 @@
             color: #713f12;
         }
 
-        /* Retro Windows 95 / Arcade Modal Dialog */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.65);
+        .footer-nav {
+            margin-top: 14px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            z-index: 9999;
-            backdrop-filter: blur(2px);
-        }
-
-        .modal-overlay.hidden {
-            display: none !important;
-        }
-
-        .retro-dialog {
-            width: 440px;
-            max-width: 92vw;
-            background: var(--ButtonFace);
-            box-shadow: 2px 2px 0px #000, inset 1px 1px 0px #fff, inset -1px -1px 0px #808080;
-            padding: 3px;
+            align-items: center;
+            gap: 12px;
             font-family: "MS Sans Serif", Tahoma, sans-serif;
-            color: black;
-            animation: popIn 0.15s ease-out;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .dialog-titlebar {
-            background: linear-gradient(90deg, #0a246a 0%, #a6caf0 100%);
-            color: white;
-            font-weight: bold;
             font-size: 13px;
-            padding: 3px 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: #cbd5e1;
+            user-select: none;
         }
 
-        .dialog-close-btn {
-            background: var(--ButtonFace);
-            border: 1px solid #fff;
-            border-right-color: #000;
-            border-bottom-color: #000;
-            color: black;
-            font-weight: bold;
-            font-size: 11px;
-            width: 16px;
-            height: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .footer-link {
+            color: #a6caf0;
+            text-decoration: none;
             cursor: pointer;
-            line-height: 1;
+            transition: color 0.15s ease;
         }
 
-        .dialog-close-btn:active {
-            border-color: #000;
-            border-right-color: #fff;
-            border-bottom-color: #fff;
+        .footer-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
         }
 
-        .dialog-body {
-            padding: 12px;
-        }
-
-        .leaderboard-table-wrap {
-            background: #000;
-            border: 2px inset #808080;
-            max-height: 260px;
-            overflow-y: auto;
-            margin: 10px 0;
-        }
-
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #00ff66;
-            text-shadow: 0 0 3px rgba(0, 255, 102, 0.4);
-        }
-
-        .leaderboard-table th {
-            background: #1e293b;
-            color: #fef08a;
-            font-family: "MS Sans Serif", Tahoma, sans-serif;
-            font-size: 11px;
-            padding: 4px 6px;
-            text-align: left;
-            border-bottom: 1px solid #475569;
-            position: sticky;
-            top: 0;
-        }
-
-        .leaderboard-table td {
-            padding: 4px 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .leaderboard-table tr:nth-child(1) td { color: #facc15; font-weight: bold; }
-        .leaderboard-table tr:nth-child(2) td { color: #e2e8f0; font-weight: bold; }
-        .leaderboard-table tr:nth-child(3) td { color: #fdba74; font-weight: bold; }
-
-        .rank-badge {
-            font-size: 10px;
-            padding: 1px 4px;
-            border-radius: 2px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            margin-left: 4px;
-        }
-
-        .retro-btn {
-            background: var(--ButtonFace);
-            border: 2px solid;
-            border-color: #fff #000 #000 #fff;
-            padding: 4px 14px;
+        .footer-separator {
+            color: #94a3b8;
             font-size: 12px;
-            font-family: "MS Sans Serif", Tahoma, sans-serif;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .retro-btn:active {
-            border-color: #000 #fff #fff #000;
-        }
-
-        .retro-btn.primary {
-            background: #1e3a8a;
-            color: #fff;
-            border-color: #60a5fa #0f172a #0f172a #60a5fa;
-        }
-
-        .retro-input {
-            width: 100%;
-            background: #fff;
-            border: 2px inset #808080;
-            padding: 5px 8px;
-            font-size: 14px;
-            box-sizing: border-box;
-            outline: none;
-            font-family: "MS Sans Serif", Tahoma, sans-serif;
-            margin-top: 4px;
-        }
-
-        .retro-input:focus {
-            border-color: #0a246a;
         }
     </style>
 </head>
 
 <body>
-    <div class="window active">
-        <div class="titlebar">
-            <span class="titlebar-title">3D Pinball for Windows - Space Cadet</span>
-            <div class="titlebar-wincontrols">
-                <ul class="buttons-wrapper">
-                    <li class="button minimize" title="Minimize">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="0.125017in" height="0.104181in"
-                            viewBox="0 0 12 10" class="button-content replaced-svg">
-                            <path id="Minimize" fill="black" stroke="black" stroke-width="0"
-                                d="M 2.00,7.00            C 2.00,7.00 8.00,7.00 8.00,7.00              8.00,7.00 8.00,9.00 8.00,9.00              8.00,9.00 2.00,9.00 2.00,9.00              2.00,9.00 2.00,7.00 2.00,7.00 Z">
-                            </path>
-                        </svg>
-                    </li>
-                    <li class="button maximize" id="btn-fullscreen-top" title="Toggle Fullscreen">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="0.125017in" height="0.104181in"
-                            viewBox="0 0 12 10" class="button-content replaced-svg">
-                            <path id="Maximize" fill="black" stroke="black" stroke-width="0"
-                                d="M 2.00,2.00            C 2.00,2.00 9.00,2.00 9.00,2.00              9.00,2.00 9.00,8.00 9.00,8.00              9.00,8.00 2.00,8.00 2.00,8.00              2.00,8.00 2.00,2.00 2.00,2.00 Z            M 1.00,0.00            C 1.00,0.00 1.00,9.00 1.00,9.00              1.00,9.00 10.00,9.00 10.00,9.00              10.00,9.00 10.00,0.00 10.00,0.00              10.00,0.00 1.00,0.00 1.00,0.00 Z">
-                            </path>
-                        </svg>
-                    </li>
-                    <li class="spacer"></li>
-                    <li class="button close" title="Close">
-                        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1"
-                            width="12" height="10" class="button-content replaced-svg">
-    <!-- Retro Header & Instructions -->
-    <div id="retro-title-container">
-        <h1>3D Pinball for Windows - Space Cadet</h1>
-        <div id="controls-hint">
-            Controls: [SPACE] Launch Plunger &bull; [Z] Left Flipper &bull; [/] Right Flipper &bull; [X],[.] Nudge Table &bull; [F2] New Game &bull; [F3] Hall of Fame
-        </div>
-    </div>
-
     <!-- Retro Windows 95 Game Window Frame -->
     <div class="window-frame" id="main-window">
         <div class="title-bar">
@@ -606,7 +445,7 @@
             </div>
             <div class="title-bar-controls">
                 <button aria-label="Minimize"></button>
-                <button aria-label="Maximize"></button>
+                <button aria-label="Maximize" id="btn-fullscreen-top"></button>
                 <button aria-label="Close"></button>
             </div>
         </div>
@@ -614,8 +453,7 @@
         <!-- Windows 95 Menu Bar -->
         <div class="menubar">
             <div class="menu-item" id="btn-new-game" title="Start a New Game (F2)"><u>G</u>ame: New (F2)</div>
-            <div class="menu-item highlight-btn" id="btn-hall-of-fame" title="View Global & Family Leaderboard">🏆 <u>H</u>all of Fame</div>
-            <div class="menu-item" id="btn-submit-score-manual" title="Record High Score to Leaderboard">⭐ Post Score</div>
+            <div class="menu-item highlight-btn" id="btn-hall-of-fame" title="View Fleet Leaderboard">🏆 <u>L</u>eaderboard</div>
             <div style="flex: 1;"></div>
             <div class="menu-item" id="btn-sign-out" title="Sign out of Portal account">🚪 Logout</div>
             <div class="menu-item" id="btn-toggle-fullscreen">⛶ Fullscreen</div>
@@ -631,102 +469,8 @@
             <!-- Floating In-Game HUD Controls (Visible on hover in Fullscreen) -->
             <div id="fullscreen-hud" class="fullscreen-hud-bar">
                 <button class="hud-btn" id="btn-hud-new-game">New Game (F2)</button>
-                <button class="hud-btn" id="btn-hud-hof">🏆 Hall of Fame</button>
+                <button class="hud-btn" id="btn-hud-hof">🏆 Leaderboard</button>
                 <button class="hud-btn" id="btn-hud-exit-fs">✕ Exit Fullscreen (ESC)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🏆 Hall of Fame Leaderboard Modal (3 Dedicated Tabs + Live Flight Session Banner) -->
-    <div id="hall-of-fame-modal" class="modal-overlay hidden">
-        <div class="retro-dialog" style="width: 580px; max-width: 95vw;">
-            <div class="dialog-titlebar">
-                <span>🏆 Space Cadet: Hall of Fame</span>
-                <button class="dialog-close-btn" id="btn-close-hof">✕</button>
-            </div>
-            <div class="dialog-body">
-                <div style="font-size: 12px; margin-bottom: 6px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
-                    <span id="hof-tab-description"><strong>Cadet Leaderboard</strong> — Top Fleet High Scores:</span>
-                    <span id="active-callsign-display" style="font-size: 11px; font-weight: bold; color: #0a246a;"></span>
-                </div>
-
-                <!-- Live Stream Banner Indicator -->
-                <div id="live-stream-status" class="live-stream-banner hidden">
-                    <div>
-                        <span class="live-pulse">🟢</span>
-                        <strong id="live-stream-title">Live Flight Active</strong>: <span id="live-stream-score" style="color: #67e8f9; font-weight: bold;">0</span> pts
-                    </div>
-                    <div style="font-size: 10px; color: #a7f3d0;" id="live-stream-meta">
-                        Streaming every minute
-                    </div>
-                </div>
-
-                <!-- 3 Retro Leaderboard Tabs -->
-                <div class="retro-tabs">
-                    <button class="retro-tab active" id="tab-global-top" data-tab="global">🏆 Global Top 10</button>
-                    <button class="retro-tab" id="tab-user-top" data-tab="user_top">🎖️ My Top 10</button>
-                    <button class="retro-tab" id="tab-user-recent" data-tab="user_recent">📜 My Last 50 Games</button>
-                </div>
-
-                <div class="leaderboard-table-wrap">
-                    <table class="leaderboard-table">
-                        <thead id="leaderboard-head">
-                            <tr>
-                                <th style="width: 35px;">#</th>
-                                <th style="width: 75px;">Callsign</th>
-                                <th>Rank Title</th>
-                                <th style="text-align: right;">Score</th>
-                                <th style="text-align: right; width: 85px;">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-body">
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">
-                                    Loading flight records...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                    <button class="retro-btn" id="btn-open-submit-from-hof">Post Score</button>
-                    <button class="retro-btn primary" id="btn-ok-hof">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ⭐ Submit High Score Modal -->
-    <div id="submit-score-modal" class="modal-overlay hidden">
-        <div class="retro-dialog" style="width: 380px;">
-            <div class="dialog-titlebar">
-                <span>⭐ Submit High Score</span>
-                <button class="dialog-close-btn" id="btn-close-submit">✕</button>
-            </div>
-            <div class="dialog-body">
-                <div style="font-size: 13px; font-weight: bold; color: #0a246a; margin-bottom: 8px;">
-                    🎉 Flight Record Complete!
-                </div>
-                <div style="font-size: 12px; color: #334155; margin-bottom: 12px;">
-                    Record your score to the Space Cadet Hall of Fame:
-                </div>
-
-                <div style="margin-bottom: 10px;">
-                    <label style="font-size: 11px; font-weight: bold;">Score Achieved:</label>
-                    <input type="number" id="input-score" class="retro-input" style="font-family: monospace; font-size: 16px; font-weight: bold; color: #0a246a;" min="1" step="10" placeholder="0">
-                </div>
-
-                <div style="margin-bottom: 12px;">
-                    <label style="font-size: 11px; font-weight: bold;">Cadet Callsign (3 Letters):</label>
-                    <input type="text" id="input-player-name" class="retro-input" maxlength="3" style="font-family: monospace; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;" placeholder="CAD">
-                </div>
-
-                <div id="submit-status-msg" style="font-size: 12px; min-height: 16px; margin-bottom: 10px; font-weight: bold;"></div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                    <button class="retro-btn" id="btn-cancel-submit">Cancel</button>
-                    <button class="retro-btn primary" id="btn-submit-score-action">Submit Score</button>
-                </div>
             </div>
         </div>
     </div>
@@ -735,11 +479,12 @@
     <div id="score-toast" style="position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #38bdf8; border: 2px solid #38bdf8; padding: 10px 16px; font-family: 'Courier New', monospace; font-size: 13px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10000; transition: opacity 0.3s; opacity: 0; pointer-events: none;">
     </div>
 
-    <div style="margin-top: 15px; color: white; font-size: 14px;">
-        Powered by the open-source decompilation project: 
-        <a href="https://github.com/k4zmu2a/SpaceCadetPinball" target="_blank" style="color: #a6caf0; text-decoration: none;">
-            <strong>k4zmu2a/SpaceCadetPinball</strong>
-        </a>
+    <div class="footer-nav">
+        <a href="https://github.com/k4zmu2a/SpaceCadetPinball" target="_blank" rel="noopener noreferrer" class="footer-link">Credits</a>
+        <span class="footer-separator">|</span>
+        <a href="leaderboard.html" class="footer-link">Leaderboard</a>
+        <span class="footer-separator">|</span>
+        <a href="your-games.html" class="footer-link">Your Games</a>
     </div>
 
     <script type='text/javascript'>
@@ -757,7 +502,6 @@
             })(),
             printErr: function (text) {
                 if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                // Suppress benign Emscripten diagnostic messages and WebGL fallback notices
                 if (
                     typeof text === 'string' && (
                         text.includes('GL_OES_EGL_image_external') ||
@@ -836,10 +580,8 @@
             deleteDoc,
             getDocs,
             query, 
-            where,
             orderBy, 
             limit, 
-            onSnapshot, 
             serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -931,21 +673,11 @@
                 localStorage.setItem(SSO_STORAGE_KEY, JSON.stringify(parsedUser));
                 console.log('✔ Portal SSO Authenticated:', parsedUser);
             }
-            // Clean URL params
             const cleanUrl = window.location.pathname;
             window.history.replaceState({}, '', cleanUrl);
         }
 
         let currentUser = null;
-
-        function updateUserDisplay() {
-            if (!currentUser) return;
-            const callsign = getCallsign(currentUser);
-            const callsignDisplay = document.getElementById('active-callsign-display');
-            if (callsignDisplay) {
-                callsignDisplay.innerText = `Callsign: [ ${callsign} ] (${currentUser.name || currentUser.userId})`;
-            }
-        }
 
         function enforceAuth() {
             currentUser = getStoredUser();
@@ -953,7 +685,6 @@
                 window.location.replace('login.html');
                 return false;
             }
-            updateUserDisplay();
             return true;
         }
 
@@ -989,268 +720,17 @@
             }, 4500);
         }
 
-        function escapeHtml(str) {
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        // ====================================================================
-        // THREE-TIER LEADERBOARD TABS & REAL-TIME FIRESTORE SUBSCRIPTIONS
-        // ====================================================================
-        const leaderboardHead = document.getElementById('leaderboard-head');
-        const leaderboardBody = document.getElementById('leaderboard-body');
-        const hofTabDescription = document.getElementById('hof-tab-description');
-
         const scoresCol = collection(db, 'pinball_scores');
         const gamesCol = collection(db, 'pinball_games');
 
-        let currentActiveTab = 'global'; // 'global' | 'user_top' | 'user_recent'
-        let cachedGlobalTop10 = [];
-        let cachedUserTop10 = [];
-        let cachedUserRecent50 = [];
-
-        function renderLeaderboardTable() {
-            if (currentActiveTab === 'global') {
-                hofTabDescription.innerHTML = '<strong>Global Top 10</strong> — Top Fleet High Scores Across All Players:';
-                leaderboardHead.innerHTML = `
-                    <tr>
-                        <th style="width: 35px;">#</th>
-                        <th style="width: 75px;">Callsign</th>
-                        <th>Rank Title</th>
-                        <th style="text-align: right;">Score</th>
-                        <th style="text-align: right; width: 85px;">Date</th>
-                    </tr>
-                `;
-
-                if (cachedGlobalTop10.length === 0) {
-                    leaderboardBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">
-                                No scores recorded yet! Be the first cadet in the Hall of Fame!
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                cachedGlobalTop10.forEach((item, idx) => {
-                    const rank = idx + 1;
-                    const scoreFormatted = Number(item.score || 0).toLocaleString();
-                    const rankTitle = item.rankTitle || getCadetRank(item.score);
-                    const callsign = (item.playerName || 'CAD').slice(0, 3).toUpperCase();
-                    let dateStr = '—';
-                    if (item.timestamp && item.timestamp.toDate) {
-                        dateStr = item.timestamp.toDate().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                    }
-
-                    html += `
-                        <tr>
-                            <td style="font-weight: bold; color: ${rank === 1 ? '#facc15' : rank === 2 ? '#e2e8f0' : rank === 3 ? '#fdba74' : '#94a3b8'};">
-                                ${rank}
-                            </td>
-                            <td style="font-weight: bold; color: #38bdf8; font-family: monospace; font-size: 14px;">
-                                ${escapeHtml(callsign)}
-                            </td>
-                            <td>
-                                <span class="rank-badge">${escapeHtml(rankTitle)}</span>
-                            </td>
-                            <td style="text-align: right; font-weight: bold; font-family: monospace;">
-                                ${scoreFormatted}
-                            </td>
-                            <td style="text-align: right; font-size: 11px; color: #94a3b8;">
-                                ${dateStr}
-                            </td>
-                        </tr>
-                    `;
-                });
-                leaderboardBody.innerHTML = html;
-
-            } else if (currentActiveTab === 'user_top') {
-                const callsign = getCallsign(currentUser);
-                hofTabDescription.innerHTML = `<strong>My Top 10 Bests</strong> — Personal Records for Cadet [ ${callsign} ]:`;
-                leaderboardHead.innerHTML = `
-                    <tr>
-                        <th style="width: 35px;">#</th>
-                        <th style="width: 75px;">Callsign</th>
-                        <th>Rank Title</th>
-                        <th style="text-align: right;">Score</th>
-                        <th style="text-align: right; width: 85px;">Date</th>
-                    </tr>
-                `;
-
-                if (cachedUserTop10.length === 0) {
-                    leaderboardBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">
-                                No personal games recorded yet. Launch a game to start logging your flight records!
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                cachedUserTop10.forEach((item, idx) => {
-                    const rank = idx + 1;
-                    const scoreFormatted = Number(item.score || 0).toLocaleString();
-                    const rankTitle = item.rankTitle || getCadetRank(item.score);
-                    const callsign = (item.playerName || getCallsign(currentUser)).slice(0, 3).toUpperCase();
-                    let dateStr = '—';
-                    const ts = item.completedAt || item.updatedAt || item.startedAt;
-                    if (ts && ts.toDate) {
-                        dateStr = ts.toDate().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                    }
-
-                    html += `
-                        <tr>
-                            <td style="font-weight: bold; color: ${rank === 1 ? '#facc15' : rank === 2 ? '#e2e8f0' : rank === 3 ? '#fdba74' : '#94a3b8'};">
-                                ${rank}
-                            </td>
-                            <td style="font-weight: bold; color: #38bdf8; font-family: monospace; font-size: 14px;">
-                                ${escapeHtml(callsign)}
-                            </td>
-                            <td>
-                                <span class="rank-badge">${escapeHtml(rankTitle)}</span>
-                            </td>
-                            <td style="text-align: right; font-weight: bold; font-family: monospace; color: #67e8f9;">
-                                ${scoreFormatted}
-                            </td>
-                            <td style="text-align: right; font-size: 11px; color: #94a3b8;">
-                                ${dateStr}
-                            </td>
-                        </tr>
-                    `;
-                });
-                leaderboardBody.innerHTML = html;
-
-            } else if (currentActiveTab === 'user_recent') {
-                const callsign = getCallsign(currentUser);
-                hofTabDescription.innerHTML = `<strong>Flight History</strong> — Last 50 Games for Cadet [ ${callsign} ]:`;
-                leaderboardHead.innerHTML = `
-                    <tr>
-                        <th style="width: 30px;">#</th>
-                        <th style="width: 95px;">Flight Date</th>
-                        <th>Rank / Status</th>
-                        <th style="text-align: right; width: 65px;">Duration</th>
-                        <th style="text-align: right;">Final Score</th>
-                    </tr>
-                `;
-
-                if (cachedUserRecent50.length === 0) {
-                    leaderboardBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 20px;">
-                                No recent flight logs found. Play a game to record your history!
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                cachedUserRecent50.forEach((item, idx) => {
-                    const num = idx + 1;
-                    const scoreFormatted = Number(item.score || 0).toLocaleString();
-                    const rankTitle = item.rankTitle || getCadetRank(item.score);
-                    const isLive = item.status === 'active';
-                    
-                    let dateStr = '—';
-                    const ts = item.startedAt || item.updatedAt;
-                    if (ts && ts.toDate) {
-                        const d = ts.toDate();
-                        dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    }
-
-                    let durationStr = '—';
-                    if (item.durationSeconds) {
-                        const mins = Math.floor(item.durationSeconds / 60);
-                        const secs = item.durationSeconds % 60;
-                        durationStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-                    } else if (isLive) {
-                        durationStr = 'Active';
-                    }
-
-                    html += `
-                        <tr>
-                            <td style="color: #94a3b8; font-size: 11px;">
-                                ${num}
-                            </td>
-                            <td style="font-size: 11px; color: #cbd5e1;">
-                                ${dateStr}
-                            </td>
-                            <td>
-                                <span class="rank-badge">${escapeHtml(rankTitle)}</span>
-                                ${isLive ? '<span style="color:#34d399; font-size:10px; font-weight:bold; margin-left:4px;">● LIVE</span>' : ''}
-                            </td>
-                            <td style="text-align: right; font-size: 11px; color: #94a3b8; font-family: monospace;">
-                                ${durationStr}
-                            </td>
-                            <td style="text-align: right; font-weight: bold; font-family: monospace; color: ${isLive ? '#34d399' : '#00ff66'};">
-                                ${scoreFormatted}
-                            </td>
-                        </tr>
-                    `;
-                });
-                leaderboardBody.innerHTML = html;
-            }
-        }
-
-        // Tab Switchers
-        const tabs = document.querySelectorAll('.retro-tab');
-        tabs.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                btn.classList.add('active');
-                currentActiveTab = btn.dataset.tab;
-                renderLeaderboardTable();
-            });
+        // Navigation bindings
+        document.getElementById('btn-hall-of-fame')?.addEventListener('click', () => {
+            window.location.href = 'leaderboard.html';
         });
-
-        // 1. Global Top 10 Real-time Listener
-        const globalTopQuery = query(scoresCol, orderBy('score', 'desc'), limit(10));
-        onSnapshot(globalTopQuery, (snapshot) => {
-            cachedGlobalTop10 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            if (currentActiveTab === 'global') renderLeaderboardTable();
-        }, (err) => {
-            console.warn('Global leaderboard query notice:', err.message);
+        document.getElementById('btn-hud-hof')?.addEventListener('click', () => {
+            exitFullscreen();
+            window.location.href = 'leaderboard.html';
         });
-
-        // 2 & 3. User Personal High Scores & Recent 50 Games Listeners
-        function setupUserFirestoreListeners() {
-            if (!currentUser || !currentUser.userId) return;
-
-            // Query user completed games for Top 10
-            const userTopQuery = query(
-                gamesCol, 
-                where('userId', '==', currentUser.userId), 
-                orderBy('score', 'desc'), 
-                limit(10)
-            );
-            onSnapshot(userTopQuery, (snapshot) => {
-                cachedUserTop10 = snapshot.docs
-                    .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .filter(g => g.score > 0);
-                if (currentActiveTab === 'user_top') renderLeaderboardTable();
-            }, (err) => {
-                console.warn('User top scores query note:', err.message);
-            });
-
-            // Query user games for Last 50 Games History
-            const userRecentQuery = query(
-                gamesCol, 
-                where('userId', '==', currentUser.userId), 
-                orderBy('startedAt', 'desc'), 
-                limit(50)
-            );
-            onSnapshot(userRecentQuery, (snapshot) => {
-                cachedUserRecent50 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (currentActiveTab === 'user_recent') renderLeaderboardTable();
-            }, (err) => {
-                console.warn('User recent history query note:', err.message);
-            });
-        }
-
-        setupUserFirestoreListeners();
 
         // ====================================================================
         // LIVE GAME SESSION & 1-MINUTE SCORE STREAMING ENGINE
@@ -1260,22 +740,6 @@
         let currentLiveScore = 0;
         let lastStreamedScore = -1;
         let lastStreamedTime = 0;
-
-        const liveStreamBanner = document.getElementById('live-stream-status');
-        const liveStreamScore = document.getElementById('live-stream-score');
-        const liveStreamMeta = document.getElementById('live-stream-meta');
-
-        function updateLiveStreamUI() {
-            if (!liveStreamBanner) return;
-            if (activeGameSession && currentLiveScore > 0) {
-                liveStreamBanner.classList.remove('hidden');
-                liveStreamScore.innerText = currentLiveScore.toLocaleString();
-                const syncTimeStr = lastStreamedTime > 0 ? new Date(lastStreamedTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Pending';
-                liveStreamMeta.innerText = `Streaming every minute • Last synced: ${syncTimeStr}`;
-            } else {
-                liveStreamBanner.classList.add('hidden');
-            }
-        }
 
         async function createNewGameSession(initialScore = 0) {
             currentUser = currentUser || getStoredUser();
@@ -1312,7 +776,6 @@
                 streamingTimer = setInterval(streamActiveScoreToFirebase, 60000); // 60 seconds (1 minute)
             }
 
-            updateLiveStreamUI();
             return session;
         }
 
@@ -1330,7 +793,6 @@
                 lastStreamedScore = currentLiveScore;
                 lastStreamedTime = Date.now();
                 console.log(`⏱️ [Minute Stream Sync] Updated Firestore score for [${activeGameSession.playerName}]: ${currentLiveScore.toLocaleString()}`);
-                updateLiveStreamUI();
             } catch (err) {
                 console.warn('Error during minute-by-minute score streaming:', err);
             }
@@ -1340,7 +802,7 @@
             if (!activeGameSession) return;
 
             const session = activeGameSession;
-            activeGameSession = null; // Detach active session immediately
+            activeGameSession = null;
 
             const effectiveScore = Math.max(session.score || 0, finalScore || 0, currentLiveScore || 0);
             const durationSeconds = Math.max(1, Math.round((Date.now() - (session.startTimeMs || Date.now())) / 1000));
@@ -1359,7 +821,6 @@
                     durationSeconds: durationSeconds
                 });
 
-                // If score is positive, check if qualifies for Global Top 10
                 if (effectiveScore > 0) {
                     await checkAndUpdateGlobalTop10(effectiveScore, session.playerName);
                 }
@@ -1370,7 +831,6 @@
             } finally {
                 currentLiveScore = 0;
                 lastStreamedScore = -1;
-                updateLiveStreamUI();
             }
         }
 
@@ -1397,7 +857,6 @@
                     });
                     console.log(`⭐ [Global Fleet Leaderboard] New Top 10 record recorded for ${callsignVal}: ${scoreVal}`);
 
-                    // Prune any scores past Top 10
                     const allSnap = await getDocs(query(scoresCol, orderBy('score', 'desc')));
                     if (allSnap.size > 10) {
                         for (let i = 10; i < allSnap.docs.length; i++) {
@@ -1416,12 +875,10 @@
             window.latestPinballScore = newScore;
 
             if (newScore === 0) {
-                // Game reset / New game started
                 if (activeGameSession && currentLiveScore > 0) {
                     completeActiveGameSession(currentLiveScore, 'Game Restart');
                 }
                 currentLiveScore = 0;
-                updateLiveStreamUI();
                 return;
             }
 
@@ -1431,109 +888,9 @@
                     createNewGameSession(newScore);
                 } else {
                     activeGameSession.score = newScore;
-                    updateLiveStreamUI();
                 }
             }
         }
-
-        // ====================================================================
-        // MODALS & ACTIONS
-        // ====================================================================
-        const hofModal = document.getElementById('hall-of-fame-modal');
-        const submitModal = document.getElementById('submit-score-modal');
-        const inputScore = document.getElementById('input-score');
-        const inputPlayerName = document.getElementById('input-player-name');
-        const submitStatusMsg = document.getElementById('submit-status-msg');
-        const btnSubmitAction = document.getElementById('btn-submit-score-action');
-
-        window.openHallOfFame = () => {
-            updateUserDisplay();
-            updateLiveStreamUI();
-            renderLeaderboardTable();
-            hofModal.classList.remove('hidden');
-        };
-        window.closeHallOfFame = () => hofModal.classList.add('hidden');
-
-        window.openSubmitScore = (prefillScore) => {
-            if (!currentUser) {
-                enforceAuth();
-                return;
-            }
-            if (prefillScore) {
-                inputScore.value = prefillScore;
-            } else if (!inputScore.value || inputScore.value === '0') {
-                inputScore.value = window.latestPinballScore || currentLiveScore || '';
-            }
-            inputPlayerName.value = getCallsign(currentUser);
-            submitStatusMsg.innerText = '';
-            submitModal.classList.remove('hidden');
-        };
-        window.closeSubmitScore = () => submitModal.classList.add('hidden');
-
-        document.getElementById('btn-hall-of-fame').addEventListener('click', window.openHallOfFame);
-        document.getElementById('btn-close-hof').addEventListener('click', window.closeHallOfFame);
-        document.getElementById('btn-ok-hof').addEventListener('click', window.closeHallOfFame);
-
-        document.getElementById('btn-submit-score-manual').addEventListener('click', () => window.openSubmitScore());
-        document.getElementById('btn-open-submit-from-hof').addEventListener('click', () => {
-            window.closeHallOfFame();
-            window.openSubmitScore();
-        });
-        document.getElementById('btn-close-submit').addEventListener('click', window.closeSubmitScore);
-        document.getElementById('btn-cancel-submit').addEventListener('click', window.closeSubmitScore);
-
-        btnSubmitAction.addEventListener('click', async () => {
-            const scoreVal = parseInt(inputScore.value, 10);
-            const callsignVal = (inputPlayerName.value.trim() || getCallsign(currentUser)).slice(0, 3).toUpperCase();
-
-            if (isNaN(scoreVal) || scoreVal <= 0) {
-                submitStatusMsg.style.color = '#dc2626';
-                submitStatusMsg.innerText = '❌ Please enter a valid positive score!';
-                return;
-            }
-
-            submitStatusMsg.style.color = '#0a246a';
-            submitStatusMsg.innerText = 'Transmitting flight record to Starfleet...';
-            btnSubmitAction.disabled = true;
-
-            try {
-                // Record to pinball_games
-                const gameId = `${currentUser.userId}_${Date.now()}`;
-                const rankTitle = getCadetRank(scoreVal);
-                await setDoc(doc(db, 'pinball_games', gameId), {
-                    gameId: gameId,
-                    userId: currentUser.userId,
-                    playerName: callsignVal,
-                    displayName: currentUser.name || currentUser.userId,
-                    userEmail: currentUser.email || '',
-                    score: scoreVal,
-                    rankTitle: rankTitle,
-                    status: 'completed',
-                    startedAt: serverTimestamp(),
-                    updatedAt: serverTimestamp(),
-                    completedAt: serverTimestamp(),
-                    durationSeconds: 120
-                });
-
-                // Check Top 10 Global
-                await checkAndUpdateGlobalTop10(scoreVal, callsignVal);
-
-                submitStatusMsg.style.color = '#15803d';
-                submitStatusMsg.innerText = `✔ Score recorded for [${callsignVal}]!`;
-                showToast(`🚀 [${callsignVal}] Score Recorded: ${scoreVal.toLocaleString()} (${rankTitle})`);
-
-                setTimeout(() => {
-                    btnSubmitAction.disabled = false;
-                    window.closeSubmitScore();
-                    window.openHallOfFame();
-                }, 700);
-            } catch (err) {
-                console.error('Score submission error:', err);
-                submitStatusMsg.style.color = '#dc2626';
-                submitStatusMsg.innerText = '❌ Failed to submit: ' + (err.message || 'Check connection');
-                btnSubmitAction.disabled = false;
-            }
-        });
 
         // Game Menu Actions
         const triggerNewGame = () => {
@@ -1622,10 +979,6 @@
 
         document.getElementById('btn-new-game')?.addEventListener('click', triggerNewGame);
         document.getElementById('btn-hud-new-game')?.addEventListener('click', triggerNewGame);
-        document.getElementById('btn-hud-hof')?.addEventListener('click', () => {
-            exitFullscreen();
-            window.openHallOfFame();
-        });
         document.getElementById('btn-hud-exit-fs')?.addEventListener('click', exitFullscreen);
         document.getElementById('btn-toggle-fullscreen')?.addEventListener('click', toggleFullscreen);
 
@@ -1640,7 +993,7 @@
             }
             if (e.key === 'F3') {
                 e.preventDefault();
-                window.openHallOfFame();
+                window.location.href = 'leaderboard.html';
             }
         });
 
@@ -1691,7 +1044,6 @@
             return found;
         }
 
-        // --- File System & Stream Close Hooks ---
         function inspectDataBuffer(name, data) {
             try {
                 if (!data) return;
@@ -1754,7 +1106,6 @@
             } catch (e) {}
         }
 
-        // Memory Scanner for active game score
         let lockedScoreOffset = -1;
         function scanWasmMemoryForScore() {
             try {
@@ -1764,7 +1115,6 @@
                 const len = heap32.length;
                 if (len === 0) return;
 
-                // If locked onto active score offset, read directly
                 if (lockedScoreOffset >= 0 && lockedScoreOffset < len) {
                     const candidate = heap32[lockedScoreOffset];
                     if (candidate >= 0 && candidate < 2000000000 && candidate % 10 === 0) {
@@ -1773,15 +1123,13 @@
                         }
                         return;
                     }
-                    lockedScoreOffset = -1; // Invalidate if out of bounds/corrupted
+                    lockedScoreOffset = -1;
                 }
 
-                // Periodic dynamic scan for player struct / score counter
                 scanPinballFS();
             } catch (e) {}
         }
 
-        // Continuous automatic background detection & streaming while game is active
         setInterval(() => {
             scanWasmMemoryForScore();
         }, 150);

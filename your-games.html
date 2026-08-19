@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Games - 3D Pinball Space Cadet</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0a246a">
+    <style>
+        :root {
+            --ActiveBorder: rgb(212, 208, 200);
+            --ActiveTitle: rgb(10, 36, 106);
+            --Background: rgb(58, 110, 165);
+            --ButtonFace: rgb(212, 208, 200);
+            --ButtonHilight: rgb(255, 255, 255);
+            --ButtonLight: rgb(212, 208, 200);
+            --ButtonShadow: rgb(128, 128, 128);
+            --ButtonDkShadow: rgb(64, 64, 64);
+            --ButtonText: rgb(0, 0, 0);
+            --GradientActiveTitle: rgb(166, 202, 240);
+            --Hilight: rgb(10, 36, 106);
+            --HilightText: rgb(255, 255, 255);
+            --TitleText: rgb(255, 255, 255);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 10px;
+            min-height: 100vh;
+            background-color: var(--Background);
+            font-family: "MS Sans Serif", Tahoma, Geneva, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .retro-window {
+            width: 600px;
+            max-width: 95vw;
+            background: var(--ButtonFace);
+            box-shadow: 2px 2px 0px #000, inset 1px 1px 0px #fff, inset -1px -1px 0px #808080;
+            padding: 3px;
+            color: black;
+        }
+
+        .titlebar {
+            background: linear-gradient(90deg, #0a246a 0%, #a6caf0 100%);
+            color: var(--TitleText);
+            font-weight: bold;
+            font-size: 13px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dialog-body {
+            padding: 14px;
+        }
+
+        .retro-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 0;
+            border-bottom: 2px solid #808080;
+            padding-left: 4px;
+        }
+
+        .retro-tab {
+            background: var(--ButtonFace);
+            border: 2px solid;
+            border-color: #fff #808080 #808080 #fff;
+            border-bottom: none;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            cursor: pointer;
+            font-weight: bold;
+            color: #334155;
+            position: relative;
+            top: 2px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .retro-tab:hover {
+            color: #0a246a;
+        }
+
+        .retro-tab.active {
+            background: var(--ButtonFace);
+            color: #0a246a;
+            border-color: #fff #000 #000 #fff;
+            border-bottom: 2px solid var(--ButtonFace);
+            top: 2px;
+            z-index: 3;
+            padding-top: 5px;
+            box-shadow: inset 1px 1px 0px #fff;
+        }
+
+        .leaderboard-table-wrap {
+            background: #000;
+            border: 2px inset #808080;
+            max-height: 380px;
+            overflow-y: auto;
+            margin: 0 0 12px 0;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ff66;
+            text-shadow: 0 0 3px rgba(0, 255, 102, 0.4);
+        }
+
+        .leaderboard-table th {
+            background: #1e293b;
+            color: #fef08a;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            font-size: 11px;
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 1px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .leaderboard-table td {
+            padding: 6px 8px;
+            border-bottom: 1px dashed #1e293b;
+        }
+
+        .leaderboard-table tr:hover td {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            background: #0369a1;
+            color: #e0f2fe;
+            text-shadow: none;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+        }
+
+        .retro-btn {
+            background: var(--ButtonFace);
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: black;
+        }
+
+        .retro-btn:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .retro-btn.primary {
+            background: #0a246a;
+            color: #fff;
+            border-color: #60a5fa #000 #000 #60a5fa;
+        }
+
+        .retro-btn.primary:hover {
+            background: #1e3a8a;
+        }
+
+        .footer-nav {
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            font-size: 13px;
+            color: #cbd5e1;
+            user-select: none;
+        }
+
+        .footer-link {
+            color: #a6caf0;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-separator {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="retro-window">
+        <div class="titlebar">
+            <span>🎖️ Space Cadet: Your Flight Records</span>
+            <span id="active-callsign-header" style="font-size: 11px;">Personal Stats</span>
+        </div>
+        <div class="dialog-body">
+            <div style="font-size: 12px; margin-bottom: 8px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
+                <span id="tab-description"><strong>Personal Records</strong> — Your Top Flight Records:</span>
+                <span id="active-callsign-display" style="font-size: 11px; font-weight: bold; color: #0a246a;"></span>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="retro-tabs">
+                <button class="retro-tab active" id="tab-user-top" data-tab="top">🎖️ Top 10 Bests</button>
+                <button class="retro-tab" id="tab-user-recent" data-tab="recent">📜 Last 50 Games</button>
+            </div>
+
+            <div class="leaderboard-table-wrap">
+                <table class="leaderboard-table">
+                    <thead id="table-head">
+                        <tr>
+                            <th style="width: 35px;">#</th>
+                            <th style="width: 75px;">Callsign</th>
+                            <th>Rank Title</th>
+                            <th style="text-align: right;">Score</th>
+                            <th style="text-align: right; width: 85px;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 25px;">
+                                Loading personal flight logs...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                <a href="leaderboard.html" class="retro-btn">🏆 Global Leaderboard</a>
+                <a href="index.html" class="retro-btn primary">🎮 Back to Game</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        <a href="https://github.com/k4zmu2a/SpaceCadetPinball" target="_blank" rel="noopener noreferrer" class="footer-link">Credits</a>
+        <span class="footer-separator">|</span>
+        <a href="leaderboard.html" class="footer-link">Leaderboard</a>
+        <span class="footer-separator">|</span>
+        <a href="your-games.html" class="footer-link" style="font-weight: bold; color: #ffffff;">Your Games</a>
+    </div>
+
+    <!-- Firebase App & Firestore SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where,
+            orderBy, 
+            limit, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnoNZls8UrsNIa8zR3-xhC81tbqq_RZ1A",
+            authDomain: "space-cadet-pinball.firebaseapp.com",
+            projectId: "space-cadet-pinball",
+            storageBucket: "space-cadet-pinball.firebasestorage.app",
+            messagingSenderId: "140350495966",
+            appId: "1:140350495966:web:f6d0654070b25685deb64f",
+            measurementId: "G-7BWMFB1JSY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const SSO_STORAGE_KEY = 'pinball_portal_user';
+        function getStoredUser() {
+            try {
+                const raw = localStorage.getItem(SSO_STORAGE_KEY);
+                if (!raw) return null;
+                const u = JSON.parse(raw);
+                if (u.expiresAt && u.expiresAt * 1000 < Date.now()) {
+                    localStorage.removeItem(SSO_STORAGE_KEY);
+                    return null;
+                }
+                return u;
+            } catch {
+                return null;
+            }
+        }
+
+        function getCallsign(u) {
+            if (!u) return 'CAD';
+            const raw = u.userId || u.name || 'CAD';
+            const clean = raw.replace(/[^a-zA-Z0-9]/g, '').slice(0, 3).toUpperCase();
+            return clean.padEnd(3, 'X');
+        }
+
+        const currentUser = getStoredUser();
+        if (!currentUser) {
+            window.location.replace('login.html');
+        }
+
+        const callsign = getCallsign(currentUser);
+        document.getElementById('active-callsign-display').innerText = `Cadet: [ ${callsign} ] (${currentUser.name || currentUser.userId})`;
+        document.getElementById('active-callsign-header').innerText = `[ ${callsign} ]`;
+
+        function getCadetRank(score) {
+            if (score >= 10000000) return 'Fleet Admiral';
+            if (score >= 5000000) return 'Commodore';
+            if (score >= 2000000) return 'Commander';
+            if (score >= 1000000) return 'Lieutenant';
+            if (score >= 500000) return 'Ensign';
+            return 'Cadet';
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        const tableHead = document.getElementById('table-head');
+        const tableBody = document.getElementById('table-body');
+        const tabDescription = document.getElementById('tab-description');
+
+        let currentTab = 'top'; // 'top' | 'recent'
+        let cachedTop10 = [];
+        let cachedRecent50 = [];
+
+        function renderTable() {
+            if (currentTab === 'top') {
+                tabDescription.innerHTML = `<strong>Top 10 Bests</strong> — Personal Records for Cadet [ ${callsign} ]:`;
+                tableHead.innerHTML = `
+                    <tr>
+                        <th style="width: 35px;">#</th>
+                        <th style="width: 75px;">Callsign</th>
+                        <th>Rank Title</th>
+                        <th style="text-align: right;">Score</th>
+                        <th style="text-align: right; width: 85px;">Date</th>
+                    </tr>
+                `;
+
+                if (cachedTop10.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 25px;">
+                                No games recorded yet. Launch a game to start logging your flight records!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                cachedTop10.forEach((item, idx) => {
+                    const rank = idx + 1;
+                    const scoreFormatted = Number(item.score || 0).toLocaleString();
+                    const rankTitle = item.rankTitle || getCadetRank(item.score);
+                    let dateStr = '—';
+                    const ts = item.completedAt || item.updatedAt || item.startedAt;
+                    if (ts && ts.toDate) {
+                        dateStr = ts.toDate().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    }
+
+                    html += `
+                        <tr>
+                            <td style="font-weight: bold; color: ${rank === 1 ? '#facc15' : rank === 2 ? '#e2e8f0' : rank === 3 ? '#fdba74' : '#94a3b8'};">
+                                ${rank}
+                            </td>
+                            <td style="font-weight: bold; color: #38bdf8; font-family: monospace; font-size: 14px;">
+                                ${escapeHtml(callsign)}
+                            </td>
+                            <td>
+                                <span class="rank-badge">${escapeHtml(rankTitle)}</span>
+                            </td>
+                            <td style="text-align: right; font-weight: bold; font-family: monospace; color: #67e8f9;">
+                                ${scoreFormatted}
+                            </td>
+                            <td style="text-align: right; font-size: 11px; color: #94a3b8;">
+                                ${dateStr}
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+
+            } else {
+                tabDescription.innerHTML = `<strong>Flight History</strong> — Last 50 Games for Cadet [ ${callsign} ]:`;
+                tableHead.innerHTML = `
+                    <tr>
+                        <th style="width: 30px;">#</th>
+                        <th style="width: 95px;">Flight Date</th>
+                        <th>Rank / Status</th>
+                        <th style="text-align: right; width: 65px;">Duration</th>
+                        <th style="text-align: right;">Final Score</th>
+                    </tr>
+                `;
+
+                if (cachedRecent50.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 25px;">
+                                No recent flight logs found. Play a game to record your history!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                cachedRecent50.forEach((item, idx) => {
+                    const num = idx + 1;
+                    const scoreFormatted = Number(item.score || 0).toLocaleString();
+                    const rankTitle = item.rankTitle || getCadetRank(item.score);
+                    const isLive = item.status === 'active';
+                    
+                    let dateStr = '—';
+                    const ts = item.startedAt || item.updatedAt;
+                    if (ts && ts.toDate) {
+                        const d = ts.toDate();
+                        dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    let durationStr = '—';
+                    if (item.durationSeconds) {
+                        const mins = Math.floor(item.durationSeconds / 60);
+                        const secs = item.durationSeconds % 60;
+                        durationStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                    } else if (isLive) {
+                        durationStr = 'Active';
+                    }
+
+                    html += `
+                        <tr>
+                            <td style="color: #94a3b8; font-size: 11px;">
+                                ${num}
+                            </td>
+                            <td style="font-size: 11px; color: #cbd5e1;">
+                                ${dateStr}
+                            </td>
+                            <td>
+                                <span class="rank-badge">${escapeHtml(rankTitle)}</span>
+                                ${isLive ? '<span style="color:#34d399; font-size:10px; font-weight:bold; margin-left:4px;">● LIVE</span>' : ''}
+                            </td>
+                            <td style="text-align: right; font-size: 11px; color: #94a3b8; font-family: monospace;">
+                                ${durationStr}
+                            </td>
+                            <td style="text-align: right; font-weight: bold; font-family: monospace; color: ${isLive ? '#34d399' : '#00ff66'};">
+                                ${scoreFormatted}
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+            }
+        }
+
+        const tabBtns = document.querySelectorAll('.retro-tab');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                currentTab = btn.dataset.tab;
+                renderTable();
+            });
+        });
+
+        const gamesCol = collection(db, 'pinball_games');
+
+        // Query user top scores
+        const userTopQuery = query(
+            gamesCol, 
+            where('userId', '==', currentUser.userId), 
+            orderBy('score', 'desc'), 
+            limit(10)
+        );
+        onSnapshot(userTopQuery, (snapshot) => {
+            cachedTop10 = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .filter(g => g.score > 0);
+            if (currentTab === 'top') renderTable();
+        }, (err) => {
+            console.warn('User top scores query note:', err.message);
+        });
+
+        // Query user recent games
+        const userRecentQuery = query(
+            gamesCol, 
+            where('userId', '==', currentUser.userId), 
+            orderBy('startedAt', 'desc'), 
+            limit(50)
+        );
+        onSnapshot(userRecentQuery, (snapshot) => {
+            cachedRecent50 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (currentTab === 'recent') renderTable();
+        }, (err) => {
+            console.warn('User recent history query note:', err.message);
+        });
+    </script>
+</body>
+
+</html>

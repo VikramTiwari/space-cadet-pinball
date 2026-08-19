@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Leaderboard - 3D Pinball Space Cadet</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0a246a">
+    <style>
+        :root {
+            --ActiveBorder: rgb(212, 208, 200);
+            --ActiveTitle: rgb(10, 36, 106);
+            --Background: rgb(58, 110, 165);
+            --ButtonFace: rgb(212, 208, 200);
+            --ButtonHilight: rgb(255, 255, 255);
+            --ButtonLight: rgb(212, 208, 200);
+            --ButtonShadow: rgb(128, 128, 128);
+            --ButtonDkShadow: rgb(64, 64, 64);
+            --ButtonText: rgb(0, 0, 0);
+            --GradientActiveTitle: rgb(166, 202, 240);
+            --Hilight: rgb(10, 36, 106);
+            --HilightText: rgb(255, 255, 255);
+            --TitleText: rgb(255, 255, 255);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 10px;
+            min-height: 100vh;
+            background-color: var(--Background);
+            font-family: "MS Sans Serif", Tahoma, Geneva, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .retro-window {
+            width: 580px;
+            max-width: 95vw;
+            background: var(--ButtonFace);
+            box-shadow: 2px 2px 0px #000, inset 1px 1px 0px #fff, inset -1px -1px 0px #808080;
+            padding: 3px;
+            color: black;
+        }
+
+        .titlebar {
+            background: linear-gradient(90deg, #0a246a 0%, #a6caf0 100%);
+            color: var(--TitleText);
+            font-weight: bold;
+            font-size: 13px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dialog-body {
+            padding: 14px;
+        }
+
+        .leaderboard-table-wrap {
+            background: #000;
+            border: 2px inset #808080;
+            max-height: 380px;
+            overflow-y: auto;
+            margin: 12px 0;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #00ff66;
+            text-shadow: 0 0 3px rgba(0, 255, 102, 0.4);
+        }
+
+        .leaderboard-table th {
+            background: #1e293b;
+            color: #fef08a;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            font-size: 11px;
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 1px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .leaderboard-table td {
+            padding: 6px 8px;
+            border-bottom: 1px dashed #1e293b;
+        }
+
+        .leaderboard-table tr:hover td {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            background: #0369a1;
+            color: #e0f2fe;
+            text-shadow: none;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+        }
+
+        .retro-btn {
+            background: var(--ButtonFace);
+            border: 2px solid;
+            border-color: #fff #000 #000 #fff;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: black;
+        }
+
+        .retro-btn:active {
+            border-color: #000 #fff #fff #000;
+        }
+
+        .retro-btn.primary {
+            background: #0a246a;
+            color: #fff;
+            border-color: #60a5fa #000 #000 #60a5fa;
+        }
+
+        .retro-btn.primary:hover {
+            background: #1e3a8a;
+        }
+
+        .footer-nav {
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            font-family: "MS Sans Serif", Tahoma, sans-serif;
+            font-size: 13px;
+            color: #cbd5e1;
+            user-select: none;
+        }
+
+        .footer-link {
+            color: #a6caf0;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-separator {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="retro-window">
+        <div class="titlebar">
+            <span>🏆 Space Cadet: Hall of Fame</span>
+            <span style="font-size: 11px;">Global Fleet</span>
+        </div>
+        <div class="dialog-body">
+            <div style="font-size: 12px; margin-bottom: 8px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
+                <span><strong>Global Top 10</strong> — Top Scores Across All Players:</span>
+                <span id="active-callsign-display" style="font-size: 11px; font-weight: bold; color: #0a246a;"></span>
+            </div>
+
+            <div class="leaderboard-table-wrap">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px;">#</th>
+                            <th style="width: 75px;">Callsign</th>
+                            <th>Rank Title</th>
+                            <th style="text-align: right;">Score</th>
+                            <th style="text-align: right; width: 85px;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #94a3b8; padding: 25px;">
+                                Loading fleet records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                <a href="your-games.html" class="retro-btn">🎖️ View Your Games</a>
+                <a href="index.html" class="retro-btn primary">🎮 Back to Game</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        <a href="https://github.com/k4zmu2a/SpaceCadetPinball" target="_blank" rel="noopener noreferrer" class="footer-link">Credits</a>
+        <span class="footer-separator">|</span>
+        <a href="leaderboard.html" class="footer-link" style="font-weight: bold; color: #ffffff;">Leaderboard</a>
+        <span class="footer-separator">|</span>
+        <a href="your-games.html" class="footer-link">Your Games</a>
+    </div>
+
+    <!-- Firebase App & Firestore SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            orderBy, 
+            limit, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnoNZls8UrsNIa8zR3-xhC81tbqq_RZ1A",
+            authDomain: "space-cadet-pinball.firebaseapp.com",
+            projectId: "space-cadet-pinball",
+            storageBucket: "space-cadet-pinball.firebasestorage.app",
+            messagingSenderId: "140350495966",
+            appId: "1:140350495966:web:f6d0654070b25685deb64f",
+            measurementId: "G-7BWMFB1JSY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const SSO_STORAGE_KEY = 'pinball_portal_user';
+        function getStoredUser() {
+            try {
+                const raw = localStorage.getItem(SSO_STORAGE_KEY);
+                if (!raw) return null;
+                const u = JSON.parse(raw);
+                if (u.expiresAt && u.expiresAt * 1000 < Date.now()) {
+                    localStorage.removeItem(SSO_STORAGE_KEY);
+                    return null;
+                }
+                return u;
+            } catch {
+                return null;
+            }
+        }
+
+        function getCallsign(u) {
+            if (!u) return 'CAD';
+            const raw = u.userId || u.name || 'CAD';
+            const clean = raw.replace(/[^a-zA-Z0-9]/g, '').slice(0, 3).toUpperCase();
+            return clean.padEnd(3, 'X');
+        }
+
+        const currentUser = getStoredUser();
+        if (currentUser) {
+            const callsign = getCallsign(currentUser);
+            const callsignDisplay = document.getElementById('active-callsign-display');
+            if (callsignDisplay) {
+                callsignDisplay.innerText = `Cadet: [ ${callsign} ]`;
+            }
+        }
+
+        function getCadetRank(score) {
+            if (score >= 10000000) return 'Fleet Admiral';
+            if (score >= 5000000) return 'Commodore';
+            if (score >= 2000000) return 'Commander';
+            if (score >= 1000000) return 'Lieutenant';
+            if (score >= 500000) return 'Ensign';
+            return 'Cadet';
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const scoresCol = collection(db, 'pinball_scores');
+        const globalTopQuery = query(scoresCol, orderBy('score', 'desc'), limit(10));
+
+        onSnapshot(globalTopQuery, (snapshot) => {
+            if (snapshot.empty) {
+                leaderboardBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #94a3b8; padding: 25px;">
+                            No scores recorded yet! Play a game to enter the Hall of Fame!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            let rank = 1;
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const scoreFormatted = Number(data.score || 0).toLocaleString();
+                const rankTitle = data.rankTitle || getCadetRank(data.score);
+                const callsign = (data.playerName || 'CAD').slice(0, 3).toUpperCase();
+                let dateStr = '—';
+                if (data.timestamp && data.timestamp.toDate) {
+                    dateStr = data.timestamp.toDate().toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                }
+
+                html += `
+                    <tr>
+                        <td style="font-weight: bold; color: ${rank === 1 ? '#facc15' : rank === 2 ? '#e2e8f0' : rank === 3 ? '#fdba74' : '#94a3b8'};">
+                            ${rank}
+                        </td>
+                        <td style="font-weight: bold; color: #38bdf8; font-family: monospace; font-size: 14px;">
+                            ${escapeHtml(callsign)}
+                        </td>
+                        <td>
+                            <span class="rank-badge">${escapeHtml(rankTitle)}</span>
+                        </td>
+                        <td style="text-align: right; font-weight: bold; font-family: monospace;">
+                            ${scoreFormatted}
+                        </td>
+                        <td style="text-align: right; font-size: 11px; color: #94a3b8;">
+                            ${dateStr}
+                        </td>
+                    </tr>
+                `;
+                rank++;
+            });
+            leaderboardBody.innerHTML = html;
+        }, (err) => {
+            console.warn('Global leaderboard query notice:', err.message);
+        });
+    </script>
+</body>
+
+</html>
