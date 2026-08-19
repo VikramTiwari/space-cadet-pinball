@@ -15,9 +15,30 @@ service cloud.firestore {
                     && request.resource.data.playerName.size() >= 1
                     && request.resource.data.playerName.size() <= 10;
                     
-      // Allow pruning scores beyond the top 100
+      // Allow pruning scores beyond the top 10
       allow delete: if true;
       allow update: if false;
+    }
+
+    match /pinball_games/{gameId} {
+      // Anyone authenticated / in family portal can read flight game records
+      allow read: if true;
+
+      // Allow creating active game sessions with valid user info and score
+      allow create: if request.resource.data.userId is string
+                    && request.resource.data.userId.size() >= 1
+                    && request.resource.data.score is int
+                    && request.resource.data.score >= 0
+                    && request.resource.data.score < 2000000000;
+
+      // Allow streaming minute-by-minute score updates and completing games
+      allow update: if request.resource.data.userId is string
+                    && request.resource.data.score is int
+                    && request.resource.data.score >= 0
+                    && request.resource.data.score < 2000000000;
+
+      // Allow pruning or cleaning old games if necessary
+      allow delete: if true;
     }
   }
 }
